@@ -22,8 +22,9 @@ public class CensusGeneralization {
 
 	public static Map<QuasiIdentifier, Map<Integer, Integer>> getCensusEquivalenceClasses(Collection<CensusDataRow> censusDataRows) {
 			Map<QuasiIdentifier, Map<Integer, Integer>> quasiIdentifiersToSensitiveValues = new HashMap<QuasiIdentifier, Map<Integer, Integer>>();
-			String[] quasiIdentifierKeys = {"Age", "Ancestry1"};
+//			String[] quasiIdentifierKeys = {"Age", "Ancestry1"};
 	//		String[] quasiIdentifierKeys = {"Ancestry1"};
+			String[] quasiIdentifierKeys = {"age", "ancestry", "class"};
 			String sensitiveValueKey = "Salary";
 			for(CensusDataRow censusDataRow : censusDataRows) {
 				QuasiIdentifier qid = censusDataRow.getQuasiIdentifier(quasiIdentifierKeys);
