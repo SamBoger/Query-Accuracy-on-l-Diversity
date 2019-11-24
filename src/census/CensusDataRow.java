@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import anonymization.QuasiIdentifier;
+import database.DatabaseUtils;
 import generalization.AgeGeneralization;
 import generalization.AncestryOneGeneralization;
 import generalization.AncestryTwoGeneralization;
@@ -26,6 +27,33 @@ public class CensusDataRow {
 		census_data.put("Ancestry2", data[3]);
 		census_data.put("Salary", data[4]);
 		census_data.put("Occupation", data[5]);
+	}
+	
+	// Census website : Paper : database
+	// 12 AGE : Age : age
+	// 35 ANCSTRY1 : Race : ancestry
+	// 54 CLASS : Work-class : class
+	// 86 OCCUP : Occupation : occupation
+	// 89 POB : Country : country
+	// 104 RPINCOME : Salary-class : salary
+	// 107 RSPOUSE : Marital : marital
+	// 112 SEX : Gender : sex
+	// 122 YEARSCH : Education : education
+	public CensusDataRow(Integer[] data, boolean raw) {
+		if(data.length != DatabaseUtils.NUM_RAW_DATABASE_COLUMNS) {
+			System.err.println("Incorrect data length for census data row, got " + data.length + " expected " + DatabaseUtils.NUM_RAW_DATABASE_COLUMNS);
+		}
+		raw_data = data;
+		census_data = new HashMap<String, Integer>(data.length);
+		census_data.put("age", data[0]);
+		census_data.put("ancestry", data[1]);
+		census_data.put("class", data[2]);
+		census_data.put("occupation", data[3]);
+		census_data.put("country", data[4]);
+		census_data.put("salary", data[5]);
+		census_data.put("marital", data[6]);
+		census_data.put("sex", data[7]);
+		census_data.put("education", data[8]);
 	}
 	
 	public QuasiIdentifier getQuasiIdentifier(String[] quasiIdentifierKeys) {

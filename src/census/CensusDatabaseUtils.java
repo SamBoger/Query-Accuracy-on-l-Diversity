@@ -26,6 +26,36 @@ public class CensusDatabaseUtils {
             System.out.println(e.getMessage());
         }
 	}
+	
+	// 12 AGE : Age : age
+	// 35 ANCSTRY1 : Race : ancestry
+	// 54 CLASS : Work-class : class
+	// 86 OCCUP : Occupation : occupation
+	// 89 POB : Country : country
+	// 104 RPINCOME : Salary-class : salary
+	// 107 RSPOUSE : Marital : marital
+	// 112 SEX : Gender : sex
+	// 122 YEARSCH : Education : education
+	public static void createRawDataSqliteDb(String databaseFilename) throws SQLException {
+		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename)) {
+			if (conn != null) {
+				String sql = "CREATE TABLE IF NOT EXISTS census(\n"
+						+ "age integer,"
+						+ "ancestry integer,"
+						+ "class integer,"
+						+ "occupation integer,"
+						+ "country integer,"
+						+ "salary integer,"
+						+ "marital integer,"
+						+ "sex integer,"
+						+ "education integer);";
+				Statement s = conn.createStatement();
+				s.execute(sql);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+	}
 //	
 //	public static void fillSqliteDb(String dataFilename) throws IOException, SQLException {
 //		ArrayList<Integer[]> data = DatabaseInput.writeCSVDataToDatabase(dataFilename);
@@ -102,6 +132,10 @@ public class CensusDatabaseUtils {
 	}
 	
 	public static Collection<CensusDataRow> getAllCensusDataRows(String databaseFilename) {
+		return getAllCensusDataRows(databaseFilename, false);
+	}
+	
+	public static Collection<CensusDataRow> getAllCensusDataRows(String databaseFilename, boolean raw) {
 		Collection<CensusDataRow> dataRows = new ArrayList<CensusDataRow>();
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
@@ -109,7 +143,12 @@ public class CensusDatabaseUtils {
 			queryStatement.execute("SELECT * FROM census");
 			ResultSet resultSet = queryStatement.getResultSet();
 			while(resultSet.next()) {
-				CensusDataRow dataRow = parseCensusDataRow(resultSet);
+				CensusDataRow dataRow;
+				if(raw) {
+					dataRow = parseCensusRawDataRow(resultSet);
+				} else {
+					dataRow = parseCensusDataRow(resultSet);
+				}
 				if(dataRow != null) {
 					dataRows.add(dataRow);
 				}
@@ -126,6 +165,14 @@ public class CensusDatabaseUtils {
 			dataInRow[i] = resultSet.getInt(i+1);
 		}
 		return new CensusDataRow(dataInRow);
+	}
+	
+	private static CensusDataRow parseCensusRawDataRow(ResultSet resultSet) throws SQLException {
+		Integer[] dataInRow = new Integer[DatabaseUtils.NUM_RAW_DATABASE_COLUMNS];
+		for(int i = 0; i < dataInRow.length; i++) {
+			dataInRow[i] = resultSet.getInt(i+1);
+		}
+		return new CensusDataRow(dataInRow, true);
 	}
 	
 //	public static void printDatabase(String databaseFilename) {
