@@ -48,7 +48,7 @@ public class AncestryOneGeneralization extends IntegerGeneralization {
 	@Override
 	public Integer getGeneralizedData(Integer rawData) {
 		if(generalization_level == 0) {
-			return rawData;
+			return (rawData/100)*100;
 		}
 		if(generalization_level == 1) { 
 			return 0;
@@ -56,4 +56,8 @@ public class AncestryOneGeneralization extends IntegerGeneralization {
 		return rawData;
 	}
 
+	@Override
+	Integer getMaxGeneralizationLevel() {		
+		return 1;
+	}
 }

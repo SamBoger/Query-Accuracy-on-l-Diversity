@@ -13,17 +13,26 @@ import database.DatabaseUtils;
 public class QueryingAnonymizedDataMain {
 
 	public static void main(String[] args) throws IOException, SQLException {
-		CensusDatabaseUtils.createRawDataSqliteDb("censusRaw.sql");
-		DatabaseUtils.writeCSVRawDataToDatabase("USCensus1990Raw.data.txt", "censusRaw.sql");
-		
-		//		DatabaseConnection.createSqliteDb("census.sql");
-//		DatabaseInput.writeCSVDataToDatabase("USCensus1990.data.txt", "census.sql");
-
-//		DatabaseConnection.createSqliteDb("censusOnePercent.sql");
-//		DatabaseInput.writeCSVDataToDatabase("USCensus1990.data.txt", "censusOnePercent.sql", true, 100);
-
-//		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows("censusRawTest.sql"); 
+//		CensusDatabaseUtils.createSqliteDb("censusTest.sql");
+//		DatabaseUtils.writeCSVDataToDatabase("testDataRaw", "censusTest.sql");
+//
+//		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows("censusTest.sql"); 
 //		System.out.println("Got " + censusData.size() + " rows!");
+//		CensusGeneralization.tryAllGeneralizations(censusData);
+		
+		
+//		CensusDatabaseUtils.createSqliteDb("census.sql");
+//		DatabaseUtils.writeCSVDataToDatabase("USCensus1990Raw.data.txt", "census.sql");
+
+//		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows("census.sql"); 
+//		System.out.println("Got " + censusData.size() + " rows!");
+//		String[] quasiIdentifiers = {"class", "ancestry"};
+//		String sensitiveValue = "salary";
+//		int kAnon = AnonymizationUtils.measureKAnonymity(CensusGeneralization.getCensusEquivalenceClasses(censusData, quasiIdentifiers, sensitiveValue));
+//		System.out.println("K-Anonymity: " + kAnon);
+//		CensusGeneralization.tryAllGeneralizations(censusData);
+		
+		
 //		AnonymizationUtils.analyzeCensusData(censusData);
 //		
 //		Integer[] generalizationLevels = {1,0,0};
