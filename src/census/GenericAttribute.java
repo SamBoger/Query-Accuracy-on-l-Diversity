@@ -14,9 +14,9 @@ public class GenericAttribute extends CensusDataAttribute {
 	}
 
 	@Override
-	int getGeneralization(int generalizationLevel) {
+	CensusDataAttribute getGeneralization(int generalizationLevel) {
 		// TODO Auto-generated method stub
-		return 0;
+		return new GenericAttribute(attribute_value, label);
 	}
 
 }

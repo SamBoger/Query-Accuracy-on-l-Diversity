@@ -3,6 +3,8 @@ package main;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import anonymization.AnonymizationUtils;
 import census.CensusDataRow;
@@ -24,14 +26,20 @@ public class QueryingAnonymizedDataMain {
 //		CensusDatabaseUtils.createSqliteDb("census.sql");
 //		DatabaseUtils.writeCSVDataToDatabase("USCensus1990Raw.data.txt", "census.sql");
 
-//		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows("census.sql"); 
-//		System.out.println("Got " + censusData.size() + " rows!");
+		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows("census.sql"); 
+		System.out.println("Got " + censusData.size() + " rows!");
 //		String[] quasiIdentifiers = {"class", "ancestry"};
 //		String sensitiveValue = "salary";
 //		int kAnon = AnonymizationUtils.measureKAnonymity(CensusGeneralization.getCensusEquivalenceClasses(censusData, quasiIdentifiers, sensitiveValue));
 //		System.out.println("K-Anonymity: " + kAnon);
-//		CensusGeneralization.tryAllGeneralizations(censusData);
-		
+		CensusGeneralization.tryAllGeneralizations(censusData);
+//		Map<String, Integer> generalizationLevels = new HashMap<String, Integer>();
+//		generalizationLevels.put("age", 2);
+//		generalizationLevels.put("ancestry", 1);
+//		generalizationLevels.put("class", 1);
+//		Collection<CensusDataRow> generalized = CensusGeneralization.getCensusGeneralizedData(censusData, generalizationLevels);
+//		CensusDatabaseUtils.createSqliteDb("censusGeneralized211.sql");
+//		CensusDatabaseUtils.writeCensusDataToDatabase("censusGeneralized211.sql", generalized);
 		
 //		AnonymizationUtils.analyzeCensusData(censusData);
 //		
@@ -43,6 +51,5 @@ public class QueryingAnonymizedDataMain {
 //		DatabaseConnection.writeCensusDataToDatabase("censusGeneralized100.sql", generalizedData);
 		
 		System.out.println("DONE");
-//		DatabaseConnection.printDatabase();
 	}
 }

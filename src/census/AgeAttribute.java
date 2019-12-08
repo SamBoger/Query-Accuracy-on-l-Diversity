@@ -1,6 +1,6 @@
 package census;
 
-import utils.Configuration;
+import static utils.Configuration.*;
 
 public class AgeAttribute extends CensusDataAttribute {
 	
@@ -10,15 +10,16 @@ public class AgeAttribute extends CensusDataAttribute {
 
 	@Override
 	public boolean isValid() {
-		return attribute_value >= Configuration.MIN_AGE_VALUE && attribute_value <= Configuration.MAX_AGE_VALUE;
+		return attribute_value >= MIN_AGE_VALUE && attribute_value <= MAX_AGE_VALUE;
 	}
 
-	// Max generalization = 6
+	// Max generalization = 5
 	@Override
-	public int getGeneralization(int generalizationLevel) {
+	public CensusDataAttribute getGeneralization(int generalizationLevel) {
 		if(generalizationLevel == 0) {
-			return attribute_value;
+			return new AgeAttribute(attribute_value, label);
 		}
-		return attribute_value/(Configuration.AGE_GENERALIZATION_GRANULARITY*(1<<(generalizationLevel-1)));
+		return new AgeAttribute((attribute_value - MIN_AGE_VALUE)/(AGE_GENERALIZATION_GRANULARITY*(1<<(generalizationLevel-1))),
+			 label);
 	}
 }

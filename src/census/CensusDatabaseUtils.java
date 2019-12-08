@@ -5,28 +5,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import database.DatabaseUtils;
-import utils.Configuration;
+import static utils.Configuration.*;
 
 public class CensusDatabaseUtils {
 	private static Connection conn = null;
 	
-	// 12 AGE : Age : age
-	// 35 ANCSTRY1 : Race : ancestry
-	// 54 CLASS : Work-class : class
-	// 86 OCCUP : Occupation : occupation
-	// 89 POB : Country : country
-	// 104 RPINCOME : Salary-class : salary
-	// 107 RSPOUSE : Marital : marital
-	// 112 SEX : Gender : sex
-	// 122 YEARSCH : Education : education
 	public static void createSqliteDb(String databaseFilename) throws SQLException {
 		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename)) {
 			if (conn != null) {
 				StringBuilder sqlQuery = new StringBuilder();
 				sqlQuery.append("CREATE TABLE IF NOT EXISTS census(\n");
-				for(int i = 0; i < Configuration.DATA_SPECIFICATION.length; i++) {
-					sqlQuery.append(Configuration.DATA_SPECIFICATION[i].label).append(" integer");
-					if(i < Configuration.DATA_SPECIFICATION.length-1) {
+				for(int i = 0; i < DATA_SPECIFICATION.length; i++) {
+					sqlQuery.append(DATA_SPECIFICATION[i].label).append(" integer");
+					if(i < DATA_SPECIFICATION.length-1) {
 						sqlQuery.append(",");
 					}
 				}
@@ -43,9 +34,9 @@ public class CensusDatabaseUtils {
 		ArrayList<Integer[]> dataToWrite = new ArrayList<Integer[]>(DatabaseUtils.MAX_LINES_TO_PROCESS);
 		int rowsToWrite = 0;
 		for(CensusDataRow dataRow : rowsData) {
-			Integer[] dataRowValues = new Integer[dataRow.census_attributes.length];
-			for(int i = 0; i < dataRow.census_attributes.length; i++) {
-				dataRowValues[i] = dataRow.census_attributes[i].attribute_value;
+			Integer[] dataRowValues = new Integer[DATA_SPECIFICATION.length];
+			for(int i = 0; i < DATA_SPECIFICATION.length; i++) {
+				dataRowValues[i] = dataRow.census_attributes.get(DATA_SPECIFICATION[i].label).attribute_value;
 			}
 			dataToWrite.add(dataRowValues);
 			rowsToWrite++;
@@ -120,9 +111,9 @@ public class CensusDatabaseUtils {
 	}
 	
 	private static CensusDataRow parseCensusDataRow(ResultSet resultSet) throws SQLException {
-		CensusDataAttribute[] dataInRow = new CensusDataAttribute[Configuration.DATA_SPECIFICATION.length];
-		for(int i = 0; i < dataInRow.length; i++) {
-			dataInRow[i] = getCensusAttribute(Configuration.DATA_SPECIFICATION[i].label, resultSet.getInt(i+1));
+		ArrayList<CensusDataAttribute> dataInRow = new ArrayList<CensusDataAttribute>(DATA_SPECIFICATION.length);
+		for(int i = 0; i < DATA_SPECIFICATION.length; i++) {
+			dataInRow.add(getCensusAttribute(DATA_SPECIFICATION[i].label, resultSet.getInt(i+1)));
 		}
 		CensusDataRow censusRow = new CensusDataRow(dataInRow);
 		if(censusRow.isValid()) {
@@ -133,12 +124,16 @@ public class CensusDatabaseUtils {
 
 	private static CensusDataAttribute getCensusAttribute(String label, int value) {
 		switch(label) {
-			case "age":
+			case AGE_LABEL:
 				return new AgeAttribute(value, label);
-			case "ancestry":
+			case ANCESTRY_LABEL:
 				return new AncestryAttribute(value, label);
-			case "class":
+			case CLASS_LABEL:
 				return new ClassAttribute(value, label);
+			case SALARY_LABEL:
+				return new SalaryAttribute(value, label);
+			case OCCUPATION_LABEL:
+				return new OccupationAttribute(value, label);
 			default:
 				return new GenericAttribute(value, label);
 		}

@@ -9,16 +9,16 @@ import java.util.Set;
 
 import anonymization.AnonymizationUtils;
 import anonymization.QuasiIdentifier;
-import generalization.AgeGeneralization;
-import utils.Configuration;
+import static utils.Configuration.*;
 
 public class CensusGeneralization {
 	
 	// TODO
 	public static void tryAllGeneralizations(Collection<CensusDataRow> censusData) {
-		int curAgeGeneralization = Configuration.MAX_AGE_GENERALIZATION-1;
-		int curAncestryGeneralization = Configuration.MAX_ANCESTRY_GENERALIZATION;
-		int curClassGeneralization = Configuration.MAX_CLASS_GENERALIZATION-1;
+		int curAgeGeneralization = MAX_AGE_GENERALIZATION;
+		int curAncestryGeneralization = MAX_ANCESTRY_GENERALIZATION;
+		int curClassGeneralization = MAX_CLASS_GENERALIZATION;
+		Map<String, Integer> generalizationLevels = new HashMap<String, Integer>();
 //		for(int curAgeGen = 0; curAgeGen <= Configuration.MAX_AGE_GENERALIZATION; curAgeGen++) {
 //			for(int curAncGen = 0; curAncGen <= Configuration.MAX_ANCESTRY_GENERALIZATION; curAncGen++) {
 //				for(int curClassGen = 0; curClassGen <= Configuration.MAX_CLASS_GENERALIZATION; curClassGen++) {
@@ -30,18 +30,16 @@ public class CensusGeneralization {
 //				}
 //			}
 //		}
-		Integer[] gens = {curAgeGeneralization, curAncestryGeneralization, curClassGeneralization};
-		Collection<CensusDataRow> generalized = getCensusGeneralizedData(censusData, gens);
+		generalizationLevels.put(AGE_LABEL, 2);
+		generalizationLevels.put(ANCESTRY_LABEL, 1);
+		generalizationLevels.put(CLASS_LABEL, 1);
+		Collection<CensusDataRow> generalized = getCensusGeneralizedData(censusData, generalizationLevels);
 		System.out.println("Generalized");
-//		AnonymizationUtils.analyzeCensusData(generalized);
+		AnonymizationUtils.analyzeCensusData(generalized);
 	}
 	
 	// TODO:
-	public static Collection<CensusDataRow> getCensusGeneralizedData(Collection<CensusDataRow> censusData, Integer[] generalizationLevels) {
-		if(generalizationLevels.length != 3) {
-			System.err.println("Generalization Levels wrong legnth " + generalizationLevels.length);
-			return null;
-		}
+	public static Collection<CensusDataRow> getCensusGeneralizedData(Collection<CensusDataRow> censusData, Map<String, Integer> generalizationLevels) {
 		Collection<CensusDataRow> generalizedData = new ArrayList<CensusDataRow>(censusData.size());
 		for(CensusDataRow dataRow : censusData) {
 			generalizedData.add(dataRow.getGeneralizedDataRow(generalizationLevels));

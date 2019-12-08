@@ -34,6 +34,8 @@ public class ClassAttributeTest {
 		
 		assertEquals(2, att11.getGeneralization(2));
 		assertEquals(3, att12.getGeneralization(2));
+		assertEquals(1, att12.getGeneralization(3));
+		assertEquals(0, att12.getGeneralization(4));
 	}
 
 }

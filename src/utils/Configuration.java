@@ -11,7 +11,72 @@ public class Configuration {
 		}
 	}
 	
-	// generalizations: DataSpecification, curGeneralization, maxGeneralization
+	private Configuration() {}
+
+	public static final String[] QUASI_IDENTIFIER_KEYS = {"age", "ancestry", "class"};
+
+	public static final String SENSITIVE_VALUE_KEY = "salary";
+	
+
+	/*
+	 * Age configurations
+	 */
+	public static final String AGE_LABEL = "age";
+	public static final int AGE_GENERALIZATION_GRANULARITY = 5;
+	public static final int MAX_AGE_GENERALIZATION = 2;
+	public static final int MAX_AGE_VALUE = Integer.MAX_VALUE;
+	public static final int MIN_AGE_VALUE = 21;
+	
+	/*
+	 * Ancestry configurations
+	 */
+	public static final String ANCESTRY_LABEL = "ancestry";
+	public static final int ANCESTRY_GENERALIZATION_GRANULARITY = 1;
+	public static final int MAX_ANCESTRY_GENERALIZATION = 1;
+	
+	
+	/*
+	 * Class configurations
+	 */
+	public static final String CLASS_LABEL = "class";
+	public static final int CLASS_GENERALIZATION_GRANULARITY = 1;
+	public static final int MAX_CLASS_GENERALIZATION = 1;
+	
+	/*
+	 * Occupation configurations
+	 */
+	public static final String OCCUPATION_LABEL = "occupation";
+	public static final int OCCUPATION_GRANULARITY = 20;
+	
+	/*
+	 * Race configurations
+	 */
+	public static final String RACE_LABEL = "race";
+	
+	/*
+	 * Salary configurations
+	 */
+	public static final String SALARY_LABEL = "salary";
+	public static final int MAX_SALARY_GENERALIZATION = 2;
+	public static final int MAX_SALARY_VALUE = 500000;
+	public static final int MIN_SALARY_VALUE = 0;
+	public static final int SALARY_GRANULARITY = 10000;
+	
+	/*
+	 * Marital configurations
+	 */
+	public static final String MARITAL_LABEL = "marital";
+	
+	/*
+	 * Gender configurations
+	 */
+	public static final String SEX_LABEL = "sex";
+	public static final int DEFAULT_SEX_ATTRIBUTE = 1;
+	
+	/*
+	 * Education configurations
+	 */
+	public static final String EDUCATION_LABEL = "education";
 	
 	// Census website : Paper : database
 	//
@@ -25,63 +90,15 @@ public class Configuration {
 	// 112 SEX : Gender : sex
 	// 122 YEARSCH : Education : education
 	
-	public static DataSpecification[] DATA_SPECIFICATION = {
-			new DataSpecification(12, "age"),
-			new DataSpecification(35, "ancestry"),
-			new DataSpecification(54, "class"),
-			new DataSpecification(86, "occupation"),
-			new DataSpecification(94, "race"),
-			new DataSpecification(104, "salary"),
-			new DataSpecification(107, "marital"),
-			new DataSpecification(112, "gender"),
-			new DataSpecification(122, "education")
+	public static final DataSpecification[] DATA_SPECIFICATION = {
+			new DataSpecification(12, AGE_LABEL),
+			new DataSpecification(35, ANCESTRY_LABEL),
+			new DataSpecification(54, CLASS_LABEL),
+			new DataSpecification(86, OCCUPATION_LABEL),
+			new DataSpecification(94, RACE_LABEL),
+			new DataSpecification(104, SALARY_LABEL),
+			new DataSpecification(107, MARITAL_LABEL),
+			new DataSpecification(112, SEX_LABEL),
+			new DataSpecification(122, EDUCATION_LABEL)
 			};
-	
-	/*
-	 * Age configurations
-	 */
-	public static int AGE_GENERALIZATION_GRANULARITY = 5;
-	public static int MAX_AGE_GENERALIZATION = 2;
-	public static int MAX_AGE_VALUE = Integer.MAX_VALUE;
-	public static int MIN_AGE_VALUE = 21;
-	
-	/*
-	 * Ancestry configurations
-	 */
-	public static int MAX_ANCESTRY_GENERALIZATION = 1;
-	
-	
-	/*
-	 * Class configurations
-	 */
-	public static int CLASS_GENERALIZATION_GRANULARITY = 3;
-	public static int MAX_CLASS_GENERALIZATION = 1;
-	
-	/*
-	 * Occupation configurations
-	 */
-	
-	/*
-	 * Race configurations
-	 */
-	
-	/*
-	 * Salary configurations
-	 */
-	public static int MAX_SALARY_GENERALIZATION = 2;
-	public static int MAX_SALARY_VALUE = 500000;
-	public static int MIN_SALARY_VALUE = 0;
-	public static int SALARY_GRANULARITY = 10000;
-	
-	/*
-	 * Marital configurations
-	 */
-	
-	/*
-	 * Gender configurations
-	 */
-	
-	/*
-	 * Education configurations
-	 */
 }

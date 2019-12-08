@@ -1,5 +1,7 @@
 package census;
 
+import static utils.Configuration.ANCESTRY_GENERALIZATION_GRANULARITY;
+
 public class AncestryAttribute extends CensusDataAttribute {
 
 		// dAncestry = 1
@@ -67,13 +69,19 @@ public class AncestryAttribute extends CensusDataAttribute {
 
 	@Override
 	boolean isValid() {
-		return attribute_value != 0;
+		return true;
+//		return attribute_value != 0;
 	}
 
+	// Max generalization = 4
 	// TODO: custom merging of categories?
 	@Override
-	int getGeneralization(int generalizationLevel) {
-		return 0;
+	public CensusDataAttribute getGeneralization(int generalizationLevel) {
+		if(generalizationLevel == 0) {
+			return new AncestryAttribute(attribute_value, label);
+		}
+		return new AncestryAttribute(attribute_value/(ANCESTRY_GENERALIZATION_GRANULARITY*(1<<generalizationLevel)),
+				label);
 	}
 
 }

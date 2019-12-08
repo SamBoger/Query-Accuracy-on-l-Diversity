@@ -1,5 +1,7 @@
 package census;
 
+import static utils.Configuration.CLASS_GENERALIZATION_GRANULARITY;
+
 public class ClassAttribute extends CensusDataAttribute {
 
 	public ClassAttribute(int attributeValue, String lab) {
@@ -11,9 +13,13 @@ public class ClassAttribute extends CensusDataAttribute {
 		return true;
 	}
 
-	// Max = 5
+	// Max = 4
 	@Override
-	int getGeneralization(int generalizationLevel) {
-		return attribute_value / (1 << generalizationLevel);
+	CensusDataAttribute getGeneralization(int generalizationLevel) {
+		if(generalizationLevel == 0) {
+			return new ClassAttribute(attribute_value, label);
+		}
+		return new ClassAttribute(attribute_value/(CLASS_GENERALIZATION_GRANULARITY*(1<<generalizationLevel)),
+				label);
 	}
 }

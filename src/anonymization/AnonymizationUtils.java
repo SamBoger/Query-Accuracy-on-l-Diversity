@@ -5,6 +5,7 @@ import java.util.Map;
 
 import census.CensusDataRow;
 import census.CensusGeneralization;
+import static utils.Configuration.*;
 
 public class AnonymizationUtils {
 
@@ -81,9 +82,9 @@ public class AnonymizationUtils {
 		return (numLDiverse+0.0)/equivalenceClasses.size();
 	}
 	
-	public static void analyzeCensusData(Collection<CensusDataRow> censusData, String[] quasiIdentifiers, String sensitiveValueKey) {
+	public static void analyzeCensusData(Collection<CensusDataRow> censusData) {
 		Map<QuasiIdentifier, Map<Integer, Integer>> equivClasses = 
-				CensusGeneralization.getCensusEquivalenceClasses(censusData, quasiIdentifiers, sensitiveValueKey);
+				CensusGeneralization.getCensusEquivalenceClasses(censusData, QUASI_IDENTIFIER_KEYS, SENSITIVE_VALUE_KEY);
 		System.out.println("Got " + equivClasses.size() + " equivalence classes!");
 		int totalSize = 0;
 		for(Map<Integer, Integer> sensValues : equivClasses.values()) {

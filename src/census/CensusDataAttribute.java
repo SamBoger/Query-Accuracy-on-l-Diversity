@@ -12,5 +12,5 @@ public abstract class CensusDataAttribute {
 	
 	abstract boolean isValid();
 	
-	abstract int getGeneralization(int generalizationLevel);
+	abstract CensusDataAttribute getGeneralization(int generalizationLevel);
 }
