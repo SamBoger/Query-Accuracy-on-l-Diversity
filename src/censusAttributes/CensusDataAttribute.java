@@ -1,4 +1,4 @@
-package census;
+package censusAttributes;
 
 public abstract class CensusDataAttribute {
 
@@ -10,7 +10,7 @@ public abstract class CensusDataAttribute {
 		label = lab;
 	}
 	
-	abstract boolean isValid();
+	public abstract boolean isValid();
 	
-	abstract CensusDataAttribute getGeneralization(int generalizationLevel);
+	public abstract CensusDataAttribute getGeneralization(int generalizationLevel);
 }

@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import census.CensusDatabaseUtils;
-import utils.Configuration;
+import static utils.Configuration.*;
 
 public class DatabaseUtils {
 	public static final int MAX_LINES_TO_PROCESS = 1000;
@@ -34,12 +34,12 @@ public class DatabaseUtils {
 	}
 	
 	private static Integer[] processCSVRow(String line, String delim, boolean sampleRows, int samplingModifier) {
-		Integer[] dataRow = new Integer[Configuration.DATA_SPECIFICATION.length];
+		Integer[] dataRow = new Integer[DATA_SPECIFICATION.length];
 		int databaseColumn = 0;
 		String[] columns = line.split(delim); 
 		
-		for(int i = 0; i < Configuration.DATA_SPECIFICATION.length; i++) {
-			int index = Configuration.DATA_SPECIFICATION[i].csvColumnNum;
+		for(int i = 0; i < DATA_SPECIFICATION.length; i++) {
+			int index = DATA_SPECIFICATION[i].csvColumnNum;
 			if (index >= columns.length) {
 				return null;
 			}
@@ -53,7 +53,7 @@ public class DatabaseUtils {
 		}
 		if(sampleRows && samplingModifier > 0 && dataRow[0] % samplingModifier != 0) {
 			return null;
-		} 
+		}
 		return dataRow;
 	}
 	

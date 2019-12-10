@@ -13,10 +13,19 @@ public class Configuration {
 	
 	private Configuration() {}
 
+	public static final int L_DIVERSITY_REQUIREMENT = 10;
+	
+//	public static final String[] QUASI_IDENTIFIER_KEYS = {"age", "ancestry", "class"};
+	
+	// age, ancestry, class --> [0, 4, 4], [1, 1, 4], [3, 4, 1], [4, 1, 1], [5, 0, 4]
+	
 	public static final String[] QUASI_IDENTIFIER_KEYS = {"age", "ancestry", "class"};
+	
+	public static final Integer[] QUASI_IDNETIFIER_MAX_GENERALIZATIONS = {6,6,6};
 
 	public static final String SENSITIVE_VALUE_KEY = "salary";
 	
+	public static final String INPUT_DATABASE_FILENAME = "census.sql";
 
 	/*
 	 * Age configurations
@@ -49,9 +58,19 @@ public class Configuration {
 	public static final int OCCUPATION_GRANULARITY = 20;
 	
 	/*
+	 * Country configurations
+	 */
+	public static final String COUNTRY_LABEL = "country";
+	public static final int COUNTRY_GRANULARITY = 10;
+	public static final int COUNTRY_GENERALIZATION_GRANULARITY = 500;
+	public static final int COUNTRY_DEFAULT_VALUE = 0;
+	
+	/*
 	 * Race configurations
 	 */
 	public static final String RACE_LABEL = "race";
+	public static final int RACE_GRANULARITY = 100;
+	public static final int RACE_DEFAULT_VALUE = 0;
 	
 	/*
 	 * Salary configurations
@@ -66,12 +85,14 @@ public class Configuration {
 	 * Marital configurations
 	 */
 	public static final String MARITAL_LABEL = "marital";
+	public static final int MARITAL_GENERALIZATION_GRANULARITY = 1;
+	public static final int MARITAL_DEFAULT_VALUE = 0;
 	
 	/*
 	 * Gender configurations
 	 */
 	public static final String SEX_LABEL = "sex";
-	public static final int DEFAULT_SEX_ATTRIBUTE = 1;
+	public static final int SEX_DEFAULT_VALUE = 1;
 	
 	/*
 	 * Education configurations

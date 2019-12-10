@@ -1,4 +1,4 @@
-package census;
+package censusAttributes;
 
 import static utils.Configuration.CLASS_GENERALIZATION_GRANULARITY;
 
@@ -9,13 +9,13 @@ public class ClassAttribute extends CensusDataAttribute {
 	}
 
 	@Override
-	boolean isValid() {
+	public boolean isValid() {
 		return true;
 	}
 
 	// Max = 4
 	@Override
-	CensusDataAttribute getGeneralization(int generalizationLevel) {
+	public CensusDataAttribute getGeneralization(int generalizationLevel) {
 		if(generalizationLevel == 0) {
 			return new ClassAttribute(attribute_value, label);
 		}

@@ -12,6 +12,8 @@ import census.CensusDatabaseUtils;
 import census.CensusGeneralization;
 import database.DatabaseUtils;
 
+import static utils.Configuration.*;
+
 public class QueryingAnonymizedDataMain {
 
 	public static void main(String[] args) throws IOException, SQLException {
@@ -26,13 +28,21 @@ public class QueryingAnonymizedDataMain {
 //		CensusDatabaseUtils.createSqliteDb("census.sql");
 //		DatabaseUtils.writeCSVDataToDatabase("USCensus1990Raw.data.txt", "census.sql");
 
-		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows("census.sql"); 
+		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows(INPUT_DATABASE_FILENAME); 
 		System.out.println("Got " + censusData.size() + " rows!");
 //		String[] quasiIdentifiers = {"class", "ancestry"};
 //		String sensitiveValue = "salary";
 //		int kAnon = AnonymizationUtils.measureKAnonymity(CensusGeneralization.getCensusEquivalenceClasses(censusData, quasiIdentifiers, sensitiveValue));
 //		System.out.println("K-Anonymity: " + kAnon);
-		CensusGeneralization.tryAllGeneralizations(censusData);
+//		int[] good = {0,4,4};
+//		int[] bad1 = {0,4,3};
+//		int[] bad2 = {0,3,4};
+		CensusGeneralization cenGen = new CensusGeneralization();
+//		System.out.println(cenGen.tryGeneralization(censusData, good));
+//		System.out.println(cenGen.tryGeneralization(censusData, bad1));
+//		System.out.println(cenGen.tryGeneralization(censusData, bad2));
+		cenGen.tryAllGeneralizations(censusData);
+		cenGen.printMinGeneralization();
 //		Map<String, Integer> generalizationLevels = new HashMap<String, Integer>();
 //		generalizationLevels.put("age", 2);
 //		generalizationLevels.put("ancestry", 1);
@@ -47,7 +57,7 @@ public class QueryingAnonymizedDataMain {
 //		Collection<CensusDataRow> generalizedData = CensusGeneralization.getCensusGeneralizedData(censusData, generalizationLevels);
 //		AnonymizationUtils.analyzeCensusData(generalizedData);
 
-//		DatabaseConnection.createSqliteDb("censusGeneralized100.sql");
+//		CensusDatabaseUtils.createSqliteDb("censusGeneralized100.sql");
 //		DatabaseConnection.writeCensusDataToDatabase("censusGeneralized100.sql", generalizedData);
 		
 		System.out.println("DONE");

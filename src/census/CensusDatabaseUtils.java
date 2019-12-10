@@ -4,6 +4,17 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import censusAttributes.AgeAttribute;
+import censusAttributes.AncestryAttribute;
+import censusAttributes.CensusDataAttribute;
+import censusAttributes.ClassAttribute;
+import censusAttributes.CountryAttribute;
+import censusAttributes.GenericAttribute;
+import censusAttributes.MaritalAttribute;
+import censusAttributes.OccupationAttribute;
+import censusAttributes.RaceAttribute;
+import censusAttributes.SalaryAttribute;
+import censusAttributes.SexAttribute;
 import database.DatabaseUtils;
 import static utils.Configuration.*;
 
@@ -130,10 +141,18 @@ public class CensusDatabaseUtils {
 				return new AncestryAttribute(value, label);
 			case CLASS_LABEL:
 				return new ClassAttribute(value, label);
-			case SALARY_LABEL:
-				return new SalaryAttribute(value, label);
+			case COUNTRY_LABEL:
+				return new CountryAttribute(value, label);
+			case MARITAL_LABEL:
+				return new MaritalAttribute(value, label);
 			case OCCUPATION_LABEL:
 				return new OccupationAttribute(value, label);
+			case RACE_LABEL:
+				return new RaceAttribute(value, label);
+			case SEX_LABEL:
+				return new SexAttribute(value, label);
+			case SALARY_LABEL:
+				return new SalaryAttribute(value, label);
 			default:
 				return new GenericAttribute(value, label);
 		}

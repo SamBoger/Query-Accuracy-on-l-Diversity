@@ -1,4 +1,4 @@
-package census;
+package censusAttributes;
 
 import static utils.Configuration.*;;
 
@@ -13,12 +13,12 @@ public class SalaryAttribute extends CensusDataAttribute {
 	}
 
 	@Override
-	boolean isValid() {
+	public boolean isValid() {
 		return true;
 	}
 
 	@Override
-	CensusDataAttribute getGeneralization(int generalizationLevel) {
+	public CensusDataAttribute getGeneralization(int generalizationLevel) {
 		return new SalaryAttribute(attribute_value, label);
 	}
 

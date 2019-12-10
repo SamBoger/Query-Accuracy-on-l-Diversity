@@ -1,4 +1,4 @@
-package census;
+package censusAttributes;
 
 import static utils.Configuration.ANCESTRY_GENERALIZATION_GRANULARITY;
 
@@ -68,7 +68,7 @@ public class AncestryAttribute extends CensusDataAttribute {
 	}
 
 	@Override
-	boolean isValid() {
+	public boolean isValid() {
 		return true;
 //		return attribute_value != 0;
 	}

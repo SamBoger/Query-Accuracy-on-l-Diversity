@@ -1,4 +1,4 @@
-package census;
+package censusAttributes;
 
 import static org.junit.Assert.*;
 

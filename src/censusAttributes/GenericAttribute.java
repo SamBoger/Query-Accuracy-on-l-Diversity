@@ -1,4 +1,4 @@
-package census;
+package censusAttributes;
 
 public class GenericAttribute extends CensusDataAttribute {
 
@@ -8,13 +8,13 @@ public class GenericAttribute extends CensusDataAttribute {
 	}
 
 	@Override
-	boolean isValid() {
+	public boolean isValid() {
 		// TODO Auto-generated method stub
 		return true;
 	}
 
 	@Override
-	CensusDataAttribute getGeneralization(int generalizationLevel) {
+	public CensusDataAttribute getGeneralization(int generalizationLevel) {
 		// TODO Auto-generated method stub
 		return new GenericAttribute(attribute_value, label);
 	}

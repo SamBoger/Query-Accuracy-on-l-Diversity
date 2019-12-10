@@ -83,8 +83,9 @@ public class AnonymizationUtils {
 	}
 	
 	public static void analyzeCensusData(Collection<CensusDataRow> censusData) {
+		CensusGeneralization cenGen = new CensusGeneralization();
 		Map<QuasiIdentifier, Map<Integer, Integer>> equivClasses = 
-				CensusGeneralization.getCensusEquivalenceClasses(censusData, QUASI_IDENTIFIER_KEYS, SENSITIVE_VALUE_KEY);
+				cenGen.getCensusEquivalenceClasses(censusData, QUASI_IDENTIFIER_KEYS, SENSITIVE_VALUE_KEY);
 		System.out.println("Got " + equivClasses.size() + " equivalence classes!");
 		int totalSize = 0;
 		for(Map<Integer, Integer> sensValues : equivClasses.values()) {
