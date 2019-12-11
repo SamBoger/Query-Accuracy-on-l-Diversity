@@ -16,24 +16,27 @@ import static utils.Configuration.*;
 
 public class CensusGeneralization {
 	
-    Set<Generalization> deadEndGeneralizations = null;
-    Set<Generalization> visited = null;
+    Set<Generalization> minimum_generalization_candidates = null;
+    Set<Generalization> visited_generalizations = null;
 	
-    Map<Generalization, Boolean> cache = null;
+    Map<Generalization, Boolean> l_diverse_generalizations_cache = null;
+    
+ // TODO: Can we optimize by skipping generalizations that we won't pick as optimal?
+//    int min_generalization_levels = Integer.MAX_VALUE;
     
 	public CensusGeneralization() {
-		deadEndGeneralizations = new HashSet<Generalization>();
-		visited = new HashSet<Generalization>();
-		cache = new HashMap<Generalization, Boolean>();
+		minimum_generalization_candidates = new HashSet<Generalization>();
+		visited_generalizations = new HashSet<Generalization>();
+		l_diverse_generalizations_cache = new HashMap<Generalization, Boolean>();
 	}
 	
 	public void printMinGeneralization() {
 		Generalization minGen = null;
 		int minTotalLevels = Integer.MAX_VALUE;
-		for(Generalization g : deadEndGeneralizations) {
+		for(Generalization g : minimum_generalization_candidates) {
 			System.out.println("Possible min gen: " + g);
 			if(g.getTotalLevels() < minTotalLevels) {
-				minTotalLevels = minGen.getTotalLevels();
+				minTotalLevels = g.getTotalLevels();
 				minGen = g;
 			}
 		}
@@ -41,53 +44,60 @@ public class CensusGeneralization {
 			System.err.println("No min generalization");
 			return;
 		}
-		System.out.println("min gen: " + minGen + " at total " + minGen.getTotalLevels());
+		System.out.println("min gen: " + minGen + " with total generalization levels " + minGen.getTotalLevels());
 	}
 	
-	// TODO
 	public void tryAllGeneralizations(Collection<CensusDataRow> censusData) throws SQLException {
-		Generalization curGeneralization = new Generalization(QUASI_IDNETIFIER_MAX_GENERALIZATIONS);
-		if (!tryGeneralization(censusData, curGeneralization)) {
+		Generalization curGeneralization = new Generalization(QUASI_IDENTIFIER_MAX_GENERALIZATIONS);
+		if (!isGeneralizationLDiverse(censusData, curGeneralization)) {
+			// If the maximum generalized table is not l-diverse, then none of the less generalized ones will be either.
 			System.err.println("Max generalization still too granular");
 		} else {
-			System.out.println("Max generalization have good L-diversity");
+			System.out.println("Max generalization has good L-diversity");
 		}
-		traverseForDeadEnds(censusData, curGeneralization);
+		visit_generalization(censusData, curGeneralization);
 
 //		String outputFilename = INPUT_DATABASE_FILENAME + "_" + "anonymized.sql";
 //		CensusDatabaseUtils.createSqliteDb(outputFilename);
 //		CensusDatabaseUtils.writeCensusDataToDatabase(outputFilename, generalized);
 	}
 	
-	private void traverseForDeadEnds(Collection<CensusDataRow> censusData, Generalization curGeneralization) {
-		if(visited.contains(curGeneralization)) {
+	private void visit_generalization(Collection<CensusDataRow> censusData, Generalization curGeneralization) {
+		if(visited_generalizations.contains(curGeneralization)) {
 			return;
 		}
-		boolean isDeadEnd = true;
-		visited.add(curGeneralization);
+		boolean isMinimumGeneralzationCandidate = true;
+		visited_generalizations.add(curGeneralization);
+		
+		// Look at slightly less generalized tables.
 		for(int i = 0; i < curGeneralization.generalization_levels.length; i++) {
+			// If this attribute is fully generalized, move on to the next attribute.
 			if(curGeneralization.generalization_levels[i] == 0) {
 				continue;
 			}
 			Integer[] newGeneralizationLevels = Arrays.copyOf(curGeneralization.generalization_levels,
 					curGeneralization.generalization_levels.length); 
-			newGeneralizationLevels[i] = newGeneralizationLevels[i] - 1;
+			newGeneralizationLevels[i]--;
 			Generalization newGeneralization = new Generalization(newGeneralizationLevels);
-			if(tryGeneralization(censusData, newGeneralization)) {
-				isDeadEnd = false;
-				traverseForDeadEnds(censusData, newGeneralization);
+			if(isGeneralizationLDiverse(censusData, newGeneralization)) {
+				// There is a less general table which still satisfies l-diversity!
+				// So current generalization is not a candidate for the minimum.
+				isMinimumGeneralzationCandidate = false;
+				visit_generalization(censusData, newGeneralization);
 			}
 		}
-		// curGeneralization is l-diverse but none of the less generalized are!
-		if(isDeadEnd && !deadEndGeneralizations.contains(curGeneralization)) {
-			deadEndGeneralizations.add(curGeneralization);
-			System.out.print("Got a dead end! " + curGeneralization); 
+		// The current generalization is l-diverse but none of the less generalized are!
+		// Add this to the candidates if not already present.
+		if(isMinimumGeneralzationCandidate && !minimum_generalization_candidates.contains(curGeneralization)) {
+			minimum_generalization_candidates.add(curGeneralization);
+			System.out.print("Got a candidate! " + curGeneralization); 
 		}
 	}
 
-	public boolean tryGeneralization(Collection<CensusDataRow> censusData, Generalization curGeneralization) {
-		if(cache.containsKey(curGeneralization)) {
-			return cache.get(curGeneralization);
+	public boolean isGeneralizationLDiverse(Collection<CensusDataRow> censusData, Generalization curGeneralization) {
+		// If we have already computed this generalization, return the value from the cache.
+		if(l_diverse_generalizations_cache.containsKey(curGeneralization)) {
+			return l_diverse_generalizations_cache.get(curGeneralization);
 		}
 		Map<String, Integer> generalizationLevels = new HashMap<String, Integer>();
 		for(int i = 0; i < curGeneralization.generalization_levels.length; i++) {
@@ -98,53 +108,59 @@ public class CensusGeneralization {
 				getCensusEquivalenceClasses(generalized, QUASI_IDENTIFIER_KEYS, SENSITIVE_VALUE_KEY),
 				L_DIVERSITY_REQUIREMENT);
 		if(lDiverse) {
+			// This generalization is l-diverse, so are all the strictly more general ones.
 			cacheUp(curGeneralization);
 		} else {
+			// This generalization is not l-diverse, so neither are the strictly less general ones.
 			cacheDown(curGeneralization);	
 		}
 		return lDiverse;
 	}
 
-	// When curGeneralization is true
 	private void cacheUp(Generalization curGeneralization) {
-		if(cache.containsKey(curGeneralization)) {
+		// If we have already put this in the cache, then this method has already been called on this generalization.
+		if(l_diverse_generalizations_cache.containsKey(curGeneralization)) {
 			return;
 		}
 		for(int i = 0; i < curGeneralization.generalization_levels.length; i++) {
-			if(curGeneralization.generalization_levels[i] < QUASI_IDNETIFIER_MAX_GENERALIZATIONS[i]) {
+			if(curGeneralization.generalization_levels[i] < QUASI_IDENTIFIER_MAX_GENERALIZATIONS[i]) {
 				Integer[] transitiveGeneralizationLevels = Arrays.copyOf(curGeneralization.generalization_levels,
 						curGeneralization.generalization_levels.length);
+				// Any more general generalization is also l-diverse by monotonicity.
 				transitiveGeneralizationLevels[i]++;
 				Generalization transitiveGeneralization = new Generalization(transitiveGeneralizationLevels);
-				if(!cache.containsKey(transitiveGeneralization)) {
+				// TODO: This check seems redundant.
+				if(!l_diverse_generalizations_cache.containsKey(transitiveGeneralization)) {
 					cacheUp(transitiveGeneralization);
 				}
 			}
 		}
 		System.out.println("caching " + curGeneralization + " with TRUE ");
-		cache.put(curGeneralization, true);
+		l_diverse_generalizations_cache.put(curGeneralization, true);
 	}
 
-	// When curGeneralization is false
 	private void cacheDown(Generalization curGeneralization) {
-		if(cache.containsKey(curGeneralization)) {
+		// If we have already put this in the cache, then this method has already been called on this generalization.
+		if(l_diverse_generalizations_cache.containsKey(curGeneralization)) {
 			return;
 		}
 		for(int i = 0; i < curGeneralization.generalization_levels.length; i++) {
 			if(curGeneralization.generalization_levels[i] > 0) {
 				Integer[] transitiveGeneralizationLevels = Arrays.copyOf(curGeneralization.generalization_levels,
 						curGeneralization.generalization_levels.length);
+				// Any less general generalization is also not l-diverse by monotonicity.
 				transitiveGeneralizationLevels[i]--;
 				Generalization transitiveGeneralization = new Generalization(transitiveGeneralizationLevels);
-				if(!cache.containsKey(transitiveGeneralization)) {
+				// TODO: This check seems redundant.
+				if(!l_diverse_generalizations_cache.containsKey(transitiveGeneralization)) {
 					cacheDown(transitiveGeneralization);
 				}
 			}
 		}
 		System.out.println("caching " + curGeneralization + " with FALSE ");
-		cache.put(curGeneralization, false);
+		l_diverse_generalizations_cache.put(curGeneralization, false);
 	}
-	// TODO:
+	
 	public Collection<CensusDataRow> getCensusGeneralizedData(Collection<CensusDataRow> censusData, Map<String, Integer> generalizationLevels) {
 		Collection<CensusDataRow> generalizedData = new ArrayList<CensusDataRow>(censusData.size());
 		for(CensusDataRow dataRow : censusData) {

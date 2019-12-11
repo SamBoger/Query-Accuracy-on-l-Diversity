@@ -11,12 +11,10 @@ import censusAttributes.CensusDataAttribute;
 
 
 public class CensusDataRow {
-	//TODO Build a map of data or turn this into a Map<String, Integer>??
-	//public CensusDataAttribute[] census_attributes;
+
 	public Map<String, CensusDataAttribute> census_attributes;
 	
 	public CensusDataRow(Collection<CensusDataAttribute> censusAttributes) {
-//		census_attributes = censusAttributes;
 		census_attributes = new HashMap<String, CensusDataAttribute>(censusAttributes.size());
 		for(CensusDataAttribute attribute : censusAttributes) {
 			census_attributes.put(attribute.label, attribute);
@@ -63,15 +61,6 @@ public class CensusDataRow {
 		}
 		return true;
 	}
-	
-//	@Override
-//	public String toString() {
-//		StringBuilder sb = new StringBuilder();
-//		for(String s : census_data.keySet()) {
-//			sb.append(s).append(": ").append(census_data.get(s)).append("\n");
-//		}
-//		return sb.toString();
-//	}
 	
 	@Override
 	public String toString() {

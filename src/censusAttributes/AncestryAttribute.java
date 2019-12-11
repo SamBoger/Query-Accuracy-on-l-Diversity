@@ -70,17 +70,15 @@ public class AncestryAttribute extends CensusDataAttribute {
 	@Override
 	public boolean isValid() {
 		return true;
-//		return attribute_value != 0;
 	}
 
-	// Max generalization = 4
-	// TODO: custom merging of categories?
 	@Override
 	public CensusDataAttribute getGeneralization(int generalizationLevel) {
 		if(generalizationLevel == 0) {
 			return new AncestryAttribute(attribute_value, label);
 		}
-		return new AncestryAttribute(attribute_value/(ANCESTRY_GENERALIZATION_GRANULARITY*(1<<generalizationLevel)),
+		// Divide by 2*(2^(level-1))
+		return new AncestryAttribute(attribute_value/(ANCESTRY_GENERALIZATION_GRANULARITY*(1<<(generalizationLevel-1))),
 				label);
 	}
 

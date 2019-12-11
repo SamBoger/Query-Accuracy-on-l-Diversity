@@ -13,20 +13,6 @@ public class Configuration {
 	
 	private Configuration() {}
 
-	public static final int L_DIVERSITY_REQUIREMENT = 10;
-	
-//	public static final String[] QUASI_IDENTIFIER_KEYS = {"age", "ancestry", "class"};
-	
-	// age, ancestry, class --> [0, 4, 4], [1, 1, 4], [3, 4, 1], [4, 1, 1], [5, 0, 4]
-	
-	public static final String[] QUASI_IDENTIFIER_KEYS = {"age", "ancestry", "class"};
-	
-	public static final Integer[] QUASI_IDNETIFIER_MAX_GENERALIZATIONS = {6,6,6};
-
-	public static final String SENSITIVE_VALUE_KEY = "salary";
-	
-	public static final String INPUT_DATABASE_FILENAME = "census.sql";
-
 	/*
 	 * Age configurations
 	 */
@@ -40,7 +26,7 @@ public class Configuration {
 	 * Ancestry configurations
 	 */
 	public static final String ANCESTRY_LABEL = "ancestry";
-	public static final int ANCESTRY_GENERALIZATION_GRANULARITY = 1;
+	public static final int ANCESTRY_GENERALIZATION_GRANULARITY = 2;
 	public static final int MAX_ANCESTRY_GENERALIZATION = 1;
 	
 	
@@ -48,7 +34,7 @@ public class Configuration {
 	 * Class configurations
 	 */
 	public static final String CLASS_LABEL = "class";
-	public static final int CLASS_GENERALIZATION_GRANULARITY = 1;
+	public static final int CLASS_GENERALIZATION_GRANULARITY = 2;
 	public static final int MAX_CLASS_GENERALIZATION = 1;
 	
 	/*
@@ -85,11 +71,11 @@ public class Configuration {
 	 * Marital configurations
 	 */
 	public static final String MARITAL_LABEL = "marital";
-	public static final int MARITAL_GENERALIZATION_GRANULARITY = 1;
+	public static final int MARITAL_GENERALIZATION_GRANULARITY = 2;
 	public static final int MARITAL_DEFAULT_VALUE = 0;
 	
 	/*
-	 * Gender configurations
+	 * Sex configurations
 	 */
 	public static final String SEX_LABEL = "sex";
 	public static final int SEX_DEFAULT_VALUE = 1;
@@ -98,6 +84,7 @@ public class Configuration {
 	 * Education configurations
 	 */
 	public static final String EDUCATION_LABEL = "education";
+	public static final int EDUCATION_GENERALIZATION_GRANULARITY = 2;
 	
 	// Census website : Paper : database
 	//
@@ -122,4 +109,24 @@ public class Configuration {
 			new DataSpecification(112, SEX_LABEL),
 			new DataSpecification(122, EDUCATION_LABEL)
 			};
+	
+	
+	public static final int L_DIVERSITY_REQUIREMENT = 10;
+	
+	// age, ancestry, class --> [0, 4, 4], [1, 1, 4], [3, 4, 1], [4, 1, 1], [5, 0, 4]
+
+	// This defines the Quasi Identifier attributes to consider for l-diversity.
+	// These will be the ones generalized if computing generalizations.
+//	public static final String[] QUASI_IDENTIFIER_KEYS = {AGE_LABEL, ANCESTRY_LABEL, CLASS_LABEL};
+	public static final String[] QUASI_IDENTIFIER_KEYS = {AGE_LABEL, ANCESTRY_LABEL, CLASS_LABEL, MARITAL_LABEL};
+	
+	// This must be the same length as QUASI_IDENTIFIER_KEYS and refers to the max generalization values
+	// to attempt, in order of the fields in QUASI_IDENTIFIER_KEYS.
+//	public static final Integer[] QUASI_IDNETIFIER_MAX_GENERALIZATIONS = {6, 6, 6};
+	public static final Integer[] QUASI_IDENTIFIER_MAX_GENERALIZATIONS = {5, 5, 3, 2};
+
+	// This is the data attribute to use as the sensitive value.
+	public static final String SENSITIVE_VALUE_KEY = SALARY_LABEL;
+	
+	public static final String INPUT_DATABASE_FILENAME = "census.sql";
 }

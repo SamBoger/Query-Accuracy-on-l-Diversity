@@ -15,7 +15,8 @@ import censusAttributes.OccupationAttribute;
 import censusAttributes.RaceAttribute;
 import censusAttributes.SalaryAttribute;
 import censusAttributes.SexAttribute;
-import database.DatabaseUtils;
+import utils.DatabaseUtils;
+
 import static utils.Configuration.*;
 
 public class CensusDatabaseUtils {

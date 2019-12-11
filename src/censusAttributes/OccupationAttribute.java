@@ -18,6 +18,7 @@ public class OccupationAttribute extends CensusDataAttribute {
 
 	@Override
 	public CensusDataAttribute getGeneralization(int generalizationLevel) {
+		// This is a sensitive value, so generalization is not applicable.
 		return new OccupationAttribute(attribute_value, label);
 	}
 }

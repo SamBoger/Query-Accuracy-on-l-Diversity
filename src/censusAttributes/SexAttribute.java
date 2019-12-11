@@ -18,6 +18,7 @@ public class SexAttribute extends CensusDataAttribute {
 		if(generalizationLevel == 0) {
 			return new SexAttribute(attribute_value, label);
 		} else {
+			// Since the data set has only 2 possible values, any generalization should use constant default value.
 			return new SexAttribute(SEX_DEFAULT_VALUE, label);
 		}
 	}

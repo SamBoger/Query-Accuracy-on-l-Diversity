@@ -19,6 +19,7 @@ public class SalaryAttribute extends CensusDataAttribute {
 
 	@Override
 	public CensusDataAttribute getGeneralization(int generalizationLevel) {
+		// This is a sensitive value, so generalization is not applicable.
 		return new SalaryAttribute(attribute_value, label);
 	}
 

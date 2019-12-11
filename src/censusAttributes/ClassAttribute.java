@@ -13,12 +13,12 @@ public class ClassAttribute extends CensusDataAttribute {
 		return true;
 	}
 
-	// Max = 4
 	@Override
 	public CensusDataAttribute getGeneralization(int generalizationLevel) {
 		if(generalizationLevel == 0) {
 			return new ClassAttribute(attribute_value, label);
 		}
+		// Divide by 2*(2^(level-1))
 		return new ClassAttribute(attribute_value/(CLASS_GENERALIZATION_GRANULARITY*(1<<generalizationLevel)),
 				label);
 	}

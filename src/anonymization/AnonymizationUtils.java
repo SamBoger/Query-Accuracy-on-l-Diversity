@@ -25,7 +25,7 @@ public class AnonymizationUtils {
 	
 	public static int measureKAnonymity(Map<QuasiIdentifier, Map<Integer, Integer>> equivalenceClasses) {
 		int minKAnonymity = Integer.MAX_VALUE;
-		System.out.println("Measuring k anaonymity over " + equivalenceClasses.size() + " classes");
+//		System.out.println("Measuring k anaonymity over " + equivalenceClasses.size() + " classes");
 		for(Map<Integer, Integer> equivClass : equivalenceClasses.values()) {
 			int numEntries = 0;
 			for(Integer numSensitiveValues : equivClass.values()) {
@@ -39,13 +39,24 @@ public class AnonymizationUtils {
 	public static boolean areEquivClassesLDiverse(Map<QuasiIdentifier, Map<Integer, Integer>> equivalenceClasses, int l) {
 		for(Map<Integer, Integer> equivClass : equivalenceClasses.values()) {
 			int distinctSensitiveValues = 0;
+//			int mostFrequentValueFrequency = 0;
+//			int totalSensitiveValues = 0;
 			for(Integer sensitiveValue : equivClass.keySet()) {
-				if(equivClass.get(sensitiveValue) > 0) {
+				int numOfSensitiveValue = equivClass.get(sensitiveValue);
+				if(numOfSensitiveValue > 0) {
 					distinctSensitiveValues ++;
 				}
+//				totalSensitiveValues += numOfSensitiveValue;
+//				mostFrequentValueFrequency = Math.max(mostFrequentValueFrequency, numOfSensitiveValue);
 			}
+			
+//			New l-diversity definition, need to investigate more before using.
+//			if((0.0 + mostFrequentValueFrequency) / totalSensitiveValues > (1.0/L_DIVERSITY_REQUIREMENT)) {
+//				return false;
+//			}
+			
+//			 Old l-diversity definition.
 			if (distinctSensitiveValues < l) {
-				System.out.println("QuasiIdentifier has only " + distinctSensitiveValues + " distinct sensitive values, not " + l + "-diverse");
 				return false;
 			}
 		}
@@ -86,18 +97,14 @@ public class AnonymizationUtils {
 		CensusGeneralization cenGen = new CensusGeneralization();
 		Map<QuasiIdentifier, Map<Integer, Integer>> equivClasses = 
 				cenGen.getCensusEquivalenceClasses(censusData, QUASI_IDENTIFIER_KEYS, SENSITIVE_VALUE_KEY);
-		System.out.println("Got " + equivClasses.size() + " equivalence classes!");
 		int totalSize = 0;
 		for(Map<Integer, Integer> sensValues : equivClasses.values()) {
 			for(Integer i : sensValues.values()) {
 				totalSize += i;
 			}
 		}
-		System.out.println("Total sensitive values: " + totalSize + " for an average size of " + (totalSize/equivClasses.size()));
+		System.out.println("Total equivalence classes: " + equivClasses.size() + " for an average size of " + (totalSize/equivClasses.size()));
 		System.out.println("K-Anonymity: " + measureKAnonymity(equivClasses));
 		System.out.println("L-Diversity: " + measureLDiversity(equivClasses));
-		for(int l = 1; l < 10; l++) {
-			System.out.println("l-Diverse pecent " + l + " = " + AnonymizationUtils.percentEquivClassesLDiverse(equivClasses, l));
-		}
 	}
 }
