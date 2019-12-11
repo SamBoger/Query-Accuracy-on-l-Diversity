@@ -11,4 +11,5 @@ public abstract class IntegerGeneralization {
 		generalization_level = generalizationLevel;
 	}
 	abstract Integer getGeneralizedData(Integer rawData);
+	abstract Integer getMaxGeneralizationLevel();
 }

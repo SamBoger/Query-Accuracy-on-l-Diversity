@@ -16,7 +16,5 @@ public class AgeGeneralizationTest {
 		Assert.assertSame(3, ageGen.getGeneralizedData(3));
 		Assert.assertSame(7, ageGen.getGeneralizedData(4));
 		Assert.assertSame(7, ageGen.getGeneralizedData(7));
-	
 	}
-
 }

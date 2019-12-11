@@ -3,15 +3,15 @@ package anonymization;
 import java.util.Map;
 
 public class QuasiIdentifier {
-	public Map<String, Integer> quasiIdentifierData;
+	public Map<String, Integer> quasi_identifier_data;
 	
 	public QuasiIdentifier(Map<String, Integer> quasiIdData) {
-		quasiIdentifierData = quasiIdData;
+		quasi_identifier_data = quasiIdData;
 	}
 	
 	@Override
 	public int hashCode() {
-		return quasiIdentifierData.hashCode();
+		return quasi_identifier_data.hashCode();
 	}
 	
 	@Override
@@ -23,12 +23,12 @@ public class QuasiIdentifier {
 	}
 	
 	public boolean equals(QuasiIdentifier otherQid) {
-		if(otherQid.quasiIdentifierData == null || otherQid.quasiIdentifierData.size() != quasiIdentifierData.size()) {
+		if(otherQid.quasi_identifier_data == null || otherQid.quasi_identifier_data.size() != quasi_identifier_data.size()) {
 			return false;
 		}
 		boolean same = true;
-		for(String key : quasiIdentifierData.keySet()) {
-			if(quasiIdentifierData.get(key) != otherQid.quasiIdentifierData.get(key)) {
+		for(String key : quasi_identifier_data.keySet()) {
+			if(quasi_identifier_data.get(key) != otherQid.quasi_identifier_data.get(key)) {
 				same = false;
 				break;
 			}
@@ -39,8 +39,8 @@ public class QuasiIdentifier {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for(String s : quasiIdentifierData.keySet()) {
-			sb.append(s).append(": ").append(quasiIdentifierData.get(s)).append("\n");
+		for(String s : quasi_identifier_data.keySet()) {
+			sb.append(s).append(": ").append(quasi_identifier_data.get(s)).append("\n");
 		}
 		return sb.toString();
 	}

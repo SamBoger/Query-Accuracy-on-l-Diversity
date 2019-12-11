@@ -3,37 +3,42 @@ package main;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import anonymization.AnonymizationUtils;
 import census.CensusDataRow;
 import census.CensusDatabaseUtils;
 import census.CensusGeneralization;
-import database.DatabaseUtils;
+import utils.DatabaseUtils;
+
+import static utils.Configuration.*;
 
 public class QueryingAnonymizedDataMain {
 
 	public static void main(String[] args) throws IOException, SQLException {
-		CensusDatabaseUtils.createRawDataSqliteDb("censusRaw.sql");
-		DatabaseUtils.writeCSVRawDataToDatabase("USCensus1990Raw.data.txt", "censusRaw.sql");
+//		Uncomment this section to parse test dataset and write it to SQL database.
+//		CensusDatabaseUtils.createSqliteDb("censusTest.sql");
+//		DatabaseUtils.writeCSVDataToDatabase("testDataRaw", "censusTest.sql");
+
+//		Uncomment this section to parse full dataset and write it to SQL database.
+//		CensusDatabaseUtils.createSqliteDb("census.sql");
+//		DatabaseUtils.writeCSVDataToDatabase("USCensus1990Raw.data.txt", "census.sql");
+
+		long curTime = System.currentTimeMillis();
 		
-		//		DatabaseConnection.createSqliteDb("census.sql");
-//		DatabaseInput.writeCSVDataToDatabase("USCensus1990.data.txt", "census.sql");
+		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows(INPUT_DATABASE_FILENAME); 
+		System.out.println("Got " + censusData.size() + " rows!");
+		CensusGeneralization censusGeneralization = new CensusGeneralization();
+		censusGeneralization.tryAllGeneralizations(censusData);
+		censusGeneralization.printMinGeneralization();
 
-//		DatabaseConnection.createSqliteDb("censusOnePercent.sql");
-//		DatabaseInput.writeCSVDataToDatabase("USCensus1990.data.txt", "censusOnePercent.sql", true, 100);
-
-//		Collection<CensusDataRow> censusData = CensusDatabaseUtils.getAllCensusDataRows("censusRawTest.sql"); 
-//		System.out.println("Got " + censusData.size() + " rows!");
-//		AnonymizationUtils.analyzeCensusData(censusData);
-//		
-//		Integer[] generalizationLevels = {1,0,0};
-//		Collection<CensusDataRow> generalizedData = CensusGeneralization.getCensusGeneralizedData(censusData, generalizationLevels);
-//		AnonymizationUtils.analyzeCensusData(generalizedData);
-
-//		DatabaseConnection.createSqliteDb("censusGeneralized100.sql");
-//		DatabaseConnection.writeCensusDataToDatabase("censusGeneralized100.sql", generalizedData);
+// 		Uncomment and modify this section to write out generalized results to a SQL database.		
+//		Collection<CensusDataRow> generalized = CensusGeneralization.getCensusGeneralizedData(censusData, generalizationLevels);
+//		CensusDatabaseUtils.createSqliteDb("censusGeneralized211.sql");
+//		CensusDatabaseUtils.writeCensusDataToDatabase("censusGeneralized211.sql", generalized);
 		
-		System.out.println("DONE");
-//		DatabaseConnection.printDatabase();
+		
+		System.out.println("DONE took " + ((System.currentTimeMillis() - curTime)/1000) + " seconds.");
 	}
 }

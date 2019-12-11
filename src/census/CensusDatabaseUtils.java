@@ -4,69 +4,53 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import database.DatabaseUtils;
+import censusAttributes.AgeAttribute;
+import censusAttributes.AncestryAttribute;
+import censusAttributes.CensusDataAttribute;
+import censusAttributes.ClassAttribute;
+import censusAttributes.CountryAttribute;
+import censusAttributes.GenericAttribute;
+import censusAttributes.MaritalAttribute;
+import censusAttributes.OccupationAttribute;
+import censusAttributes.RaceAttribute;
+import censusAttributes.SalaryAttribute;
+import censusAttributes.SexAttribute;
+import utils.DatabaseUtils;
+
+import static utils.Configuration.*;
 
 public class CensusDatabaseUtils {
 	private static Connection conn = null;
-
+	
 	public static void createSqliteDb(String databaseFilename) throws SQLException {
 		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename)) {
 			if (conn != null) {
-				String sql = "CREATE TABLE IF NOT EXISTS census(\n"
-						+ "id integer primary key,"
-						+ "age integer,"
-						+ "anc1 integer,"
-						+ "anc2 integer,"
-						+ "salary integer,"
-						+ "occupation integer);";
+				StringBuilder sqlQuery = new StringBuilder();
+				sqlQuery.append("CREATE TABLE IF NOT EXISTS census(\n");
+				for(int i = 0; i < DATA_SPECIFICATION.length; i++) {
+					sqlQuery.append(DATA_SPECIFICATION[i].label).append(" integer");
+					if(i < DATA_SPECIFICATION.length-1) {
+						sqlQuery.append(",");
+					}
+				}
+				sqlQuery.append(");");
 				Statement s = conn.createStatement();
-				s.execute(sql);
+				s.execute(sqlQuery.toString());
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 	}
-	
-	// 12 AGE : Age : age
-	// 35 ANCSTRY1 : Race : ancestry
-	// 54 CLASS : Work-class : class
-	// 86 OCCUP : Occupation : occupation
-	// 89 POB : Country : country
-	// 104 RPINCOME : Salary-class : salary
-	// 107 RSPOUSE : Marital : marital
-	// 112 SEX : Gender : sex
-	// 122 YEARSCH : Education : education
-	public static void createRawDataSqliteDb(String databaseFilename) throws SQLException {
-		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename)) {
-			if (conn != null) {
-				String sql = "CREATE TABLE IF NOT EXISTS census(\n"
-						+ "age integer,"
-						+ "ancestry integer,"
-						+ "class integer,"
-						+ "occupation integer,"
-						+ "country integer,"
-						+ "salary integer,"
-						+ "marital integer,"
-						+ "sex integer,"
-						+ "education integer);";
-				Statement s = conn.createStatement();
-				s.execute(sql);
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-	}
-//	
-//	public static void fillSqliteDb(String dataFilename) throws IOException, SQLException {
-//		ArrayList<Integer[]> data = DatabaseInput.writeCSVDataToDatabase(dataFilename);
-//		fillRows(data);
-//	}
-//	
+
 	public static void writeCensusDataToDatabase(String databaseFilename, Collection<CensusDataRow> rowsData) throws SQLException {
 		ArrayList<Integer[]> dataToWrite = new ArrayList<Integer[]>(DatabaseUtils.MAX_LINES_TO_PROCESS);
 		int rowsToWrite = 0;
 		for(CensusDataRow dataRow : rowsData) {
-			dataToWrite.add(dataRow.raw_data);
+			Integer[] dataRowValues = new Integer[DATA_SPECIFICATION.length];
+			for(int i = 0; i < DATA_SPECIFICATION.length; i++) {
+				dataRowValues[i] = dataRow.census_attributes.get(DATA_SPECIFICATION[i].label).attribute_value;
+			}
+			dataToWrite.add(dataRowValues);
 			rowsToWrite++;
 			if(rowsToWrite >= DatabaseUtils.MAX_LINES_TO_PROCESS) {
 				fillRows(databaseFilename, dataToWrite);
@@ -80,7 +64,6 @@ public class CensusDatabaseUtils {
 	}
 	
 	public static void fillRows(String databaseFilename, ArrayList<Integer[]> rowsData) throws SQLException {
-//		System.out.println("Printing rows: " + rowsData.size());
 		PreparedStatement ps = null;
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
@@ -118,24 +101,9 @@ public class CensusDatabaseUtils {
         	conn.setAutoCommit(true);
         }
 	}
-	
-	public static CensusDataRow getOneCensusDataRow(String databaseFilename) {
-		try {
-			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
-			Statement s = conn.createStatement();
-			s.execute("SELECT * FROM census LIMIT 1");
-			return parseCensusDataRow(s.getResultSet());
-		}  catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-		return null;
-	}
+
 	
 	public static Collection<CensusDataRow> getAllCensusDataRows(String databaseFilename) {
-		return getAllCensusDataRows(databaseFilename, false);
-	}
-	
-	public static Collection<CensusDataRow> getAllCensusDataRows(String databaseFilename, boolean raw) {
 		Collection<CensusDataRow> dataRows = new ArrayList<CensusDataRow>();
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
@@ -143,12 +111,7 @@ public class CensusDatabaseUtils {
 			queryStatement.execute("SELECT * FROM census");
 			ResultSet resultSet = queryStatement.getResultSet();
 			while(resultSet.next()) {
-				CensusDataRow dataRow;
-				if(raw) {
-					dataRow = parseCensusRawDataRow(resultSet);
-				} else {
-					dataRow = parseCensusDataRow(resultSet);
-				}
+				CensusDataRow dataRow = parseCensusDataRow(resultSet);				
 				if(dataRow != null) {
 					dataRows.add(dataRow);
 				}
@@ -160,37 +123,39 @@ public class CensusDatabaseUtils {
 	}
 	
 	private static CensusDataRow parseCensusDataRow(ResultSet resultSet) throws SQLException {
-		Integer[] dataInRow = new Integer[DatabaseUtils.NUM_DATABASE_COLUMNS];
-		for(int i = 0; i < dataInRow.length; i++) {
-			dataInRow[i] = resultSet.getInt(i+1);
+		ArrayList<CensusDataAttribute> dataInRow = new ArrayList<CensusDataAttribute>(DATA_SPECIFICATION.length);
+		for(int i = 0; i < DATA_SPECIFICATION.length; i++) {
+			dataInRow.add(getCensusAttribute(DATA_SPECIFICATION[i].label, resultSet.getInt(i+1)));
 		}
-		return new CensusDataRow(dataInRow);
-	}
-	
-	private static CensusDataRow parseCensusRawDataRow(ResultSet resultSet) throws SQLException {
-		Integer[] dataInRow = new Integer[DatabaseUtils.NUM_RAW_DATABASE_COLUMNS];
-		for(int i = 0; i < dataInRow.length; i++) {
-			dataInRow[i] = resultSet.getInt(i+1);
+		CensusDataRow censusRow = new CensusDataRow(dataInRow);
+		if(censusRow.isValid()) {
+			return censusRow;
 		}
-		return new CensusDataRow(dataInRow, true);
+		return null;
 	}
-	
-//	public static void printDatabase(String databaseFilename) {
-//		try {
-//			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
-//			Statement s = conn.createStatement();
-//			s.execute("SELECT * FROM census");
-//			ResultSet r = s.getResultSet();
-//			while(r.next()) {
-//				int id = r.getInt(1);
-//				int age = r.getInt(2);
-//				int anc1 = r.getInt(3);
-//				int anc2 = r.getInt(4);
-//				System.out.println("" + id + ", " + age + ", " + anc1 + ", " + anc2);
-//			}
-//		}  catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
-//	}
+
+	private static CensusDataAttribute getCensusAttribute(String label, int value) {
+		switch(label) {
+			case AGE_LABEL:
+				return new AgeAttribute(value, label);
+			case ANCESTRY_LABEL:
+				return new AncestryAttribute(value, label);
+			case CLASS_LABEL:
+				return new ClassAttribute(value, label);
+			case COUNTRY_LABEL:
+				return new CountryAttribute(value, label);
+			case MARITAL_LABEL:
+				return new MaritalAttribute(value, label);
+			case OCCUPATION_LABEL:
+				return new OccupationAttribute(value, label);
+			case RACE_LABEL:
+				return new RaceAttribute(value, label);
+			case SEX_LABEL:
+				return new SexAttribute(value, label);
+			case SALARY_LABEL:
+				return new SalaryAttribute(value, label);
+			default:
+				return new GenericAttribute(value, label);
+		}
+	}
 }
-//DatabaseMetaData meta = conn.getMetaData();
