@@ -1,0 +1,304 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Template for USENIX papers.
+%
+% History:
+%
+% - TEMPLATE for Usenix papers, specifically to meet requirements of
+%   USENIX '05. originally a template for producing IEEE-format
+%   articles using LaTeX. written by Matthew Ward, CS Department,
+%   Worcester Polytechnic Institute. adapted by David Beazley for his
+%   excellent SWIG paper in Proceedings, Tcl 96. turned into a
+%   smartass generic template by De Clarke, with thanks to both the
+%   above pioneers. Use at your own risk. Complaints to /dev/null.
+%   Make it two column with no page numbering, default is 10 point.
+%
+% - Munged by Fred Douglis <douglis@research.att.com> 10/97 to
+%   separate the .sty file from the LaTeX source template, so that
+%   people can more easily include the .sty file into an existing
+%   document. Also changed to more closely follow the style guidelines
+%   as represented by the Word sample file.
+%
+% - Note that since 2010, USENIX does not require endnotes. If you
+%   want foot of page notes, don't include the endnotes package in the
+%   usepackage command, below.
+% - This version uses the latex2e styles, not the very ancient 2.09
+%   stuff.
+%
+% - Updated July 2018: Text block size changed from 6.5" to 7"
+%
+% - Updated Dec 2018 for ATC'19:
+%
+%   * Revised text to pass HotCRP's auto-formatting check, with
+%     hotcrp.settings.submission_form.body_font_size=10pt, and
+%     hotcrp.settings.submission_form.line_height=12pt
+%
+%   * Switched from \endnote-s to \footnote-s to match Usenix's policy.
+%
+%   * \section* => \begin{abstract} ... \end{abstract}
+%
+%   * Make template self-contained in terms of bibtex entires, to allow
+%     this file to be compiled. (And changing refs style to 'plain'.)
+%
+%   * Make template self-contained in terms of figures, to
+%     allow this file to be compiled. 
+%
+%   * Added packages for hyperref, embedding fonts, and improving
+%     appearance.
+%   
+%   * Removed outdated text.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[letterpaper,twocolumn,10pt]{article}
+\usepackage{usenix-2020-09}
+
+% to be able to draw some self-contained figs
+\usepackage{tikz}
+\usepackage{amsmath}
+
+% inlined bib file
+\usepackage{filecontents}
+
+%-------------------------------------------------------------------------------
+\begin{filecontents}[overwrite]{\jobname.bib}
+%-------------------------------------------------------------------------------
+@article{sweeneyKAnonymity,
+  title={k-anonymity: A model for protecting privacy},
+  author={Sweeney, Latanya},
+  journal={International Journal of Uncertainty, Fuzziness and Knowledge-Based Systems},
+  volume={10},
+  number={05},
+  pages={557--570},
+  year={2002},
+  publisher={World Scientific}
+}
+@article{machanavajjhalalDiversity,
+  title={l-diversity: Privacy beyond k-anonymity},
+  author={Machanavajjhala, Ashwin and Kifer, Daniel and Gehrke, Johannes and Venkitasubramaniam, Muthuramakrishnan},
+  journal={ACM Transactions on Knowledge Discovery from Data (TKDD)},
+  volume={1},
+  number={1},
+  pages={3--es},
+  year={2007},
+  publisher={ACM New York, NY, USA}
+}
+@inproceedings{litCloseness,
+  title={t-closeness: Privacy beyond k-anonymity and l-diversity},
+  author={Li, Ninghui and Li, Tiancheng and Venkatasubramanian, Suresh},
+  booktitle={2007 IEEE 23rd International Conference on Data Engineering},
+  pages={106--115},
+  year={2007},
+  organization={IEEE}
+}
+@article{niClustering,
+  title={Clustering Based K-anonymity Algorithm for Privacy Preservation.},
+  author={Ni, Sang and Xie, Mengbo and Qian, Quan},
+  journal={IJ Network Security},
+  volume={19},
+  number={6},
+  pages={1062--1071},
+  year={2017}
+}
+@article{liuDensity,
+  title={A density-based clustering method for k-anonymity privacy protection},
+  author={Liu, Jie and Yin, Shou-Lin and Li, Hang and Teng, Lin},
+  journal={Journal of Information Hiding and Multimedia Signal Processing},
+  volume={8},
+  number={1},
+  pages={12--18},
+  year={2017}
+}
+@inproceedings{chiuClustering,
+  title={A k-anonymity clustering method for effective data privacy preservation},
+  author={Chiu, Chuang-Cheng and Tsai, Chieh-Yuan},
+  booktitle={International Conference on Advanced Data Mining and Applications},
+  pages={89--99},
+  year={2007},
+  organization={Springer}
+}
+@inproceedings{soriaSwapping,
+  title={Probabilistic k-anonymity through microaggregation and data swapping},
+  author={Soria-Comas, Jordi and Domingo-Ferrer, Josep},
+  booktitle={2012 IEEE International Conference on Fuzzy Systems},
+  pages={1--8},
+  year={2012},
+  organization={IEEE}
+}
+@inproceedings{xiaoAnatomy,
+  title={Anatomy: Simple and effective privacy preservation},
+  author={Xiao, Xiaokui and Tao, Yufei},
+  booktitle={Proceedings of the 32nd international conference on Very large data bases},
+  pages={139--150},
+  year={2006},
+  organization={VLDB Endowment}
+}
+@article{domingoMicroag,
+  title={Ordinal, continuous and heterogeneous k-anonymity through microaggregation},
+  author={Domingo-Ferrer, Josep and Torra, Vicen{\c{c}}},
+  journal={Data Mining and Knowledge Discovery},
+  volume={11},
+  number={2},
+  pages={195--212},
+  year={2005},
+  publisher={Springer}
+}
+@inproceedings{jiaPad,
+  title={PAD: protecting anonymity in publishing building related datasets},
+  author={Jia, Ruoxi and Sangogboye, Fisayo Caleb and Hong, Tianzhen and Spanos, Costas and Kj{\ae}rgaard, Mikkel Baun},
+  booktitle={Proceedings of the 4th ACM International Conference on Systems for Energy-Efficient Built Environments},
+  pages={1--10},
+  year={2017}
+}
+@misc{adultDatabase,
+  author = {Dua, Dheeru and Graff, Casey},
+  year = {2017},
+  title = {UCI Machine Learning Repository},
+  note = {\url{http://archive.ics.uci.edu/ml}},
+  howpublished = {University of California, Irvine, School of Information and Computer Sciences}
+}
+@article{sangogboyePad,
+  title={A framework for privacy-preserving data publishing with enhanced utility for cyber-physical systems},
+  author={Sangogboye, Fisayo Caleb and Jia, Ruoxi and Hong, Tianzhen and Spanos, Costas and Kj{\ae}rgaard, Mikkel Baun},
+  journal={ACM Transactions on Sensor Networks (TOSN)},
+  volume={14},
+  number={3-4},
+  pages={1--22},
+  year={2018},
+  publisher={ACM New York, NY, USA}
+}
+@article{liuInfoTheory,
+  title={Towards attack and defense views to K-Anonymous using information theory approach},
+  author={Liu, Cheng and Tian, Youliang and Xiong, Jinbo and Lu, Yanhua and Li, Qiuxian and Peng, Changgen},
+  journal={IEEE Access},
+  volume={7},
+  pages={156025--156032},
+  year={2019},
+  publisher={IEEE}
+}
+@inproceedings{duInfoTheory,
+  title={Privacy against statistical inference},
+  author={du Pin Calmon, Fl{\'a}vio and Fawaz, Nadia},
+  booktitle={2012 50th annual Allerton conference on communication, control, and computing (Allerton)},
+  pages={1401--1408},
+  year={2012},
+  organization={IEEE}
+}
+@inproceedings{schweeEval,
+  title={Evaluating practical privacy attacks for building data anonymized by standard methods},
+  author={Schwee, Jens Hjort and Sangogboye, Fisayo Caleb and Kj{\ae}rgaard, Mikkel Baun},
+  booktitle={International Workshop on Security and Privacy for the Internet-of-Things},
+  year={2019}
+}
+@inproceedings{vsarvcevicEffectiveness,
+  title={An Analysis of Different Notions of Effectiveness in k-Anonymity},
+  author={{\v{S}}ar{\v{c}}evi{\'c}, Tanja and Molnar, David and Mayer, Rudolf},
+  booktitle={International Conference on Privacy in Statistical Databases},
+  pages={121--135},
+  year={2020},
+  organization={Springer}
+}
+
+\end{filecontents}
+
+%-------------------------------------------------------------------------------
+\begin{document}
+%-------------------------------------------------------------------------------
+
+%don't want date printed
+\date{}
+
+% make title bold and 14 pt font (Latex default is non-bold, 16 pt)
+\title{\Large \bf l-Diversity for Custom Data Analysis:\\
+  Swapping Similar Rows}
+
+%for single author (just remove % characters)
+\author{
+{\rm Sam Boger and Roberto Tamassia} \\
+Department of Computer Science, Brown University
+
+% copy the following lines to add more authors
+% \and
+% {\rm Name}\\
+%Name Institution
+} % end author
+
+\maketitle
+\section{Abstract}
+Data anonymization should support the analysts who intend to use the anonymized data. Releasing datasets that contain personal information requires anonymization, but this can be performed in various ways that result in outputs differing in quality and format. The implementation details affect the accuracy of the analysis as well as usability. This work shows how choosing anonymization techniques with these requirements in mind improves effectiveness in qualitiative terms, minimizing the discrepancy between querying the original data versus the anonymized result, and qualitatively, avoiding extra work for the analysts to access the data.
+
+\section{Introduction}
+Data sharing offers immense opportunity as modern machine learning models and human analysis often depends on large training sets. However, valuable information is frequently also personal, and privacy concerns can prevent data owners from sharing their data. Several approaches have been offered in order to alleviate privacy concerns while still sharing useful data to the public. K-anonymity reduces the chance of an individual’s data being re-identified, but it can leak too much information about an individual's data in certain adversarial models and data contexts. L-diversity can offer stronger privacy guarantees at the cost of reducing the utility of the released data. Evaluating the utility of privacy preserving data modification is itself a challenging topic--the most common analysis strategies cover table-wide metrics or machine learning model quality using the anonymized data.
+
+Shifting perspectives to the data consumer can clarify how to choose between these options. In particular, imagine analysts know the schema of the original dataset and already know what kinds of queries they care most about. Now, utility can be best defined as minimizing the discrepancy the analysts will see between querying the original data and the anonymized data. Fruthermore, changing the schema or data definitions when anonymizing the data would disrupt their workflow and should be avoided if possible.
+
+Different prior work in this field addresses these design decisions. Identifying and combining these techniques can meet these user requirements effectively. In particular, allowing the analysts to easily customize the anonymization algorithm, as well as publishing data with identical schema and semantics to the original dataset will best meet the requirements proposed as a motivating example while still protecting individuals' privacy.
+
+\section{Related Work}
+\subsection{Anonymization Definitions}
+K-anonymity\cite{sweeneykAnonymity} is one of the most influential works for defining privacy-preserving anonymization. Removing personally identifiable information from datasets can still leave data that act as quasi-identifiers (QIs) which can be combined with separate data sources by an adversary to re-identify an individual. If the original dataset has sensitive information about individuals, then this re-identification leaks the association of that individual to those sensitive values and thus the effort to remove the identifiers was insufficient to preserve privacy. K-anonmyity address this concern by ensuring that at least $k$ rows have identical QIs so that any individual effectively blends in with at least $k-1$ other individuals. To create these homogeneous groups, the QIs are mapped onto a less granular space, e.g. full birth date may be mapped instead to birth year. Furthermore, certain rows can be suppressed (removed from the dataset entirely) to reduce the amount of generalization necessary. Now, individual re-identification from outside data sources can only imply membership in group of size at least $k$. Many subsequent works expanded on this original definition and discussed improvements to this method.
+
+L-diversity\cite{machanavajjhalalDiversity} is one such extension to this method which places a further constraint on the anonymized dataset that each group of records with identical QIs must also satisfy. Call the size of a group of records N, and the most frequent sensitive value in the group S. The group is L-diverse if and only if $\frac{S}{N}<\frac{1}{L}$, and the table is L-diverse if every record belong to a group that is L-diverse. Intuitively this means that learning which group an individual belongs to will never reveal its associated sensitive value with probability greater than $\frac{1}{L}$. Without this property, it is possible that all sensitive values for a group of records with identical generalized QIs are the same, and identifying an individual within that group reveals their sensitive value regardless of the group's size. Furthermore, auxiliary information may exist that one or more sensitive value is highly unlikely for an individual, so a diverse set of sensitive values within each group protects against this process of elimination style of attack. The tunable parameter L in this scheme reduces the likelihood of this leakage by increasing the diversity of every group.
+
+Further restrictions have also been considered, including T-closeness\cite{litCloseness} where each group of homogenized records must contain a similar (within a factor of T) distribution of sensitive values as the entire original table. This emphasizes privacy guarantees at the expense of increased difficulty in computing the anonymized table and decreased utility for analysis. For this project we do not consider T-closeness and instead focus on L-diversity, although similar ideas would apply in principle.
+
+\subsection{Implementations}
+In order to maintain better utility of the anonymized table, as well as more efficient computation of the anonymized dataset, many papers have explored clustering methods for constructing K-anonymity or L-diversity groups rather than arbitrary groupings. By grouping together similar records, the correlations that exist in the original dataset can be better preserved while still providing the privacy guarantees of these anonymization methods\cite{niClustering}\cite{liuDensity}\cite{chiuClustering}. Different clustering algorithms are described in these works (weighted feature C-means, density clustering) which all seek to collect similar records into groups that will then be generalized to produce the anonymized datasets.
+
+In addition to varying the clustering algorithms, other work has modified the distance metric between rows to better preserve utility for a particular use case\cite{jiaPad}. Here, the data analysts using the anonymized data contribute information regarding which rows they consider similar to teach the anonymization system a customized distance metric. Clustering according to this metric still produces a k-anonymous dataset, but the groups contain rows that are more similar according to this customized notion of distance.
+
+Another approach to preserving utility is proposed and analyzed in \cite{soriaSwapping}, where instead of producing a dataset with groups of rows that have identical quasi-identifiers through generalization and suppression, all records in a given group are randomly swapped with their associated sensitive values. Even for an adversary with knowledge of which rows were in the same group, this ensures a similar guarantee as a traditional L-diverse table where re-identifying a certain row only reveals the correct sensitive value with probability $\leq\frac{1}{L}$. The authors quantify the improved utility of a data swapped and generalized tables at the aggregate level by computing and comparing the correlation between QIs and sensitive values in the different anonymized datasets compared to the original dataset. Data swapping preserves correlation much better than generalization in their experiments.
+
+Similarly to shuffling within each group of records, \cite{xiaoAnatomy} proposes publishing the sets of QIs in a separate table than the sensitive values but with a join key specific to each group--which they call an anatomy. Therefore, similarly to\cite{soriaSwapping}, the QIs in the original dataset are published but it is not revealed exactly which sensitive value corresponds to which row. This paper evaluates the increased utility of this method by measuring query accuracy. They create tests counting queries by randomly choosing attribute values to select for at various configurations. They compute the relative error by running the same queries on a dataset with no anonymization versus L-diverse datasets produced with generalization or anatomy. Their results demonstrate that the relative error in answering these queries for anatomy is less than the relative error for generalization.
+
+\subsection{Utility Analysis}
+There are mulitple techniques for this analysis. Most common are table-wide statistical metrics (e.g. \cite{soriaSwapping}) and the quality of machine learning model trained over the anonymized data (e.g. \cite{sangogboyePad}). Earlier work\cite{xiaoAnatomy} uses a test suite of queries to assess utility. Other efforts attempt to reconcile the different metrics but conclude that it is difficult to correlate the statistical measures of the anaonymized dataset to the effectiveness of models trained over those datasets\cite{vsarvcevicEffectiveness}.
+
+\section{Unique Contributions}
+This project intends to combine the insights from these different works to describe a promising anonymization technique that adequately protects privacy, preserves utility of the dataset, and produces an easy-to-use resulting dataset. In particular, the proposed method uses a customized distance function\cite{jiaPad} to cluster, and performs data swapping\cite{soriaSwapping} within these clusters, to produce an l-diverse\cite{machanavajjhalalDiversity} anonymized dataset.
+
+\section{Clustering Method and Data Analysis}
+This section will describe the possible relationships between the anonymization’s clustering method and the queries to be run over the anonymized data. Specifically, this will introduce the notation to describe the QIs that are prioritized for clustering, the other QIs, and the sensitive values. The details depend on the implementation of clustering and the configurations that will be chosen.
+
+\section{Experimental Setup}
+
+\subsection{Dataset}
+The primary dataset\cite{adultDatabase} contains census records that are often used for testing prediction models and anonymity generation methods.
+
+\subsection{Analysis}
+\begin{enumerate}
+    \item Naive cluster generation for k-anonymity.
+    \item Custom distance metrics for k-anonymity.
+    \item Naive cluster generation for l-diversity.
+    \item Custom distance metrics for l-diversity.
+    \item For each, their performance on a suite of queries as compared to running those queries over the full table (non-anonymized).
+\end{enumerate}
+
+\section{Attacking Anonymized Data}
+Prior work on the privacy of k-anonymity addresses privacy risks in different ways. The original papers make reasonable assumptions about the types of background knowledge an adversary might have when doing formal calculations about probabilities of a successful attack. They note that in principle it is impossible to account for arbitrary background knowledge of attackers.
+
+Subsequent works advance the theory surrounding this topic by bringing in techniques from other areas of computer science. Information theory can provide a framework for considering the tension in anonymization between providing accurate information to the legitimate users of the anonymized dataset while withholding private information from adversaries with access to the same dataset\cite{liuInfoTheory}. With a more sophisticated model of this tradeoff, the problem can be viewed as an optimization of this tradeoff for average or worst-case information leakage to an adversary\cite{duInfoTheory}.
+
+For any particular k-anonymous dataset, it is possible to launch a customized attack to attempt to recover information about the original dataset. One such example \cite{schweeEval} was able to reidentify particular rooms in a k-anonymous dataset unless they also employed suppression to remove outliers in the data.
+
+\section{Privacy Properties}
+In terms of privacy guarantees, cluster based data swapping will be compared to the other anonymization methods. Specifically it will be shown that discovering sensitive values for a re-identified row is as difficult on a shuffled table as it is on a generalized table with the same L-diversity properties. It’s plausible that clustering will even enhance the privacy properties against an adversary with certain background demographic knowledge. The use of clustering ensures that the entries with swapped sensitive values will be more similar to each other along the dimensions of the clustering than if chosen randomly. Therefore it may be less likely for the swapped data to have implausible rows which give adversaries additional information. This will be discussed more thoroughly in the privacy properties section.
+
+Relate privacy guarantees from L-diversity, anatomy, and data swapping. Specifically anatomy can be used to produce a data swapping. Data swapping does not provide strong guarantees that reconstructing the anatomy is difficult, and in fact may be easy to do with some decent probability depending on the structure of the data and how the grouping is done.
+
+A weakness of anatomy and data swapping is that they allow for direct membership testing--revealing that a set of QIs are in the dataset at all, even if the associated sensitive value is still unlikely to be leaked. Discuss the impact of this.
+
+Cluster based data swapping is similar, although may be slightly stronger to attackers with background statistical knowledge since more similar entries across certain QIs will be grouped together. If the adversary has statistical knowledge attacks based on infeasible combinations (e.g. young person with dementia) then clustering on age will reduce the effectiveness of this attack.
+
+\section{Conclusion}
+
+
+%-------------------------------------------------------------------------------
+\bibliographystyle{plain}
+\bibliography{\jobname}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%  LocalWords:  endnotes includegraphics fread ptr nobj noindent
+%%  LocalWords:  pdflatex acks
