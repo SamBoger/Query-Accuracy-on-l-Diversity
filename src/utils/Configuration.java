@@ -5,9 +5,15 @@ public class Configuration {
 	public static class DataSpecification {
 		public int csvColumnNum;
 		public String label;
+		public boolean isInt;
 		private DataSpecification(int csvCol, String lab) {
 			csvColumnNum = csvCol;
 			label = lab;
+		}
+		private DataSpecification(int csvCol, String lab, boolean isInt) {
+			csvColumnNum = csvCol;
+			label = lab;
+			this.isInt = isInt;
 		}
 	}
 	
@@ -86,6 +92,16 @@ public class Configuration {
 	public static final String EDUCATION_LABEL = "education";
 	public static final int EDUCATION_GENERALIZATION_GRANULARITY = 2;
 	
+	/*
+	 * Work class configurations
+	 */
+	public static final String WORK_CLASS_LABEL = "work_class";
+	
+	/*
+	 * Education configurations
+	 */
+	public static final String HOURS_LABEL = "hours";
+	
 	// Census website : Paper : database
 	//
 	// 12 AGE : Age : age
@@ -98,7 +114,7 @@ public class Configuration {
 	// 112 SEX : Gender : sex
 	// 122 YEARSCH : Education : education
 	
-	public static final DataSpecification[] DATA_SPECIFICATION = {
+	public static final DataSpecification[] CENSUS_DATA_SPECIFICATION = {
 			new DataSpecification(12, AGE_LABEL),
 			new DataSpecification(35, ANCESTRY_LABEL),
 			new DataSpecification(54, CLASS_LABEL),
@@ -109,7 +125,19 @@ public class Configuration {
 			new DataSpecification(112, SEX_LABEL),
 			new DataSpecification(122, EDUCATION_LABEL)
 			};
+	private static final boolean IS_INT = true;
 	
+	public static final DataSpecification[] ADULT_DATA_SPECIFICATION = {
+			new DataSpecification(0, AGE_LABEL, IS_INT),
+			new DataSpecification(1, WORK_CLASS_LABEL, !IS_INT),
+//			new DataSpecification(3, EDUCATION_LABEL),
+//			new DataSpecification(5, MARITAL_LABEL),
+//			new DataSpecification(6, OCCUPATION_LABEL),
+//			new DataSpecification(8, RACE_LABEL),
+//			new DataSpecification(9, SEX_LABEL),
+//			new DataSpecification(12, HOURS_LABEL),
+//			new DataSpecification(13, COUNTRY_LABEL)
+			};
 	
 	public static final int L_DIVERSITY_REQUIREMENT = 10;
 	
@@ -128,5 +156,6 @@ public class Configuration {
 	// This is the data attribute to use as the sensitive value.
 	public static final String SENSITIVE_VALUE_KEY = SALARY_LABEL;
 	
-	public static final String INPUT_DATABASE_FILENAME = "census.sql";
+	public static final String INPUT_DATABASE_FILENAME = "adult.sql";
+//	public static final String INPUT_DATABASE_FILENAME = "census.sql";
 }
