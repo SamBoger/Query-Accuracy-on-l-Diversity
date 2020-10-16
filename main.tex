@@ -233,7 +233,7 @@ Department of Computer Science, Brown University
 } % end author
 
 \maketitle
-\section{Abstract}
+\section*{Abstract}
 Data anonymization should support the analysts who intend to use the anonymized data. Releasing datasets that contain personal information requires anonymization which can be performed in various ways that result in outputs differing in quality and format. The implementation details affect the accuracy of the analysis as well as usability. This work shows how choosing anonymization techniques with these requirements in mind improves effectiveness in quantitative terms by minimizing the discrepancy between querying the original data versus the anonymized result and qualitatively by simplifying the workflow for analysts to process the data.
 
 \section{Introduction}
@@ -264,6 +264,7 @@ Similarly to shuffling within each group of records, \cite{xiaoAnatomy} proposes
 There are mulitple techniques for this analysis. Most common are table-wide statistical metrics (e.g. \cite{soriaSwapping}) and the quality of machine learning model trained over the anonymized data (e.g. \cite{sangogboyePad}). Earlier work\cite{xiaoAnatomy} uses a test suite of queries to assess utility. Other efforts attempt to reconcile the different metrics but conclude that it is difficult to correlate the statistical measures of the anaonymized datasets to the effectiveness of models trained over those datasets\cite{vsarvcevicEffectiveness}.
 
 \section{Unique Contributions}
+% MOVE to subsection of introduction
 This project intends to combine the insights from these different works to describe a promising anonymization technique that adequately protects privacy, preserves utility of the dataset, and produces an easy-to-use resulting dataset. In particular, the proposed method uses a customized distance function\cite{jiaPad} to cluster, and performs data swapping\cite{soriaSwapping} within these clusters, to produce an l-diverse\cite{machanavajjhalalDiversity} anonymized dataset.
 
 \section{Clustering Method and Data Analysis}
@@ -304,7 +305,10 @@ Cluster based data swapping is similar, although may be slightly stronger to att
 
 %-------------------------------------------------------------------------------
 \bibliographystyle{plain}
-\bibliography{\jobname}
+
+% \bibliography{\jobname}
+
+\bibliography{bib/references}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \end{document}
