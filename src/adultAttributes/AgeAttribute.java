@@ -16,4 +16,9 @@ public class AgeAttribute extends AdultDataAttribute {
 		int attribute_int = attribute_value instanceof Integer ? (Integer) attribute_value : -1;
 		return attribute_int >= MIN_AGE_VALUE && attribute_int <= MAX_AGE_VALUE;
 	}
+
+	@Override
+	public String toString() {
+		return ((Integer) attribute_value).toString();
+	}
 }

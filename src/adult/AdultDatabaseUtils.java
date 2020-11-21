@@ -15,11 +15,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import adultAttributes.AdultDataAttribute;
-
-import adultAttributes.AgeAttribute;
-import adultAttributes.WorkClassAttribute;
+import adultAttributes.*;
 
 public class AdultDatabaseUtils {
 	private static Connection conn = null;
@@ -173,6 +171,20 @@ public class AdultDatabaseUtils {
 		switch(label) {
 			case AGE_LABEL:
 				return new AgeAttribute(value, label);
+			case COUNTRY_LABEL:
+				return new CountryAttribute(value, label);
+			case EDUCATION_LABEL:
+				return new EducationAttribute(value, label);
+			case FIFTY_THOUSAND_LABEL:
+				return new FiftyThousandAttribute(value, label);
+			case MARITAL_LABEL:
+				return new MaritalAttribute(value, label);
+			case OCCUPATION_LABEL:
+				return new OccupationAttribute(value, label);
+			case RACE_LABEL:
+				return new RaceAttribute(value, label);
+			case SEX_LABEL:
+				return new SexAttribute(value, label);
 			case WORK_CLASS_LABEL:
 				return new WorkClassAttribute(value, label);
 			default:
@@ -182,11 +194,23 @@ public class AdultDatabaseUtils {
 	
 	
 	
+	
+	
 	public static void writeCSVDataToDatabase(String filename, String databaseFilename, boolean sampled, int samplingModifier) throws IOException, SQLException {
 		writeCSVDataToDatabase(filename, databaseFilename, ",\\s*", sampled, samplingModifier);
 	}
 	
 	public static void writeCSVDataToDatabase(String filename, String databaseFilename) throws IOException, SQLException {
 		writeCSVDataToDatabase(filename, databaseFilename, false, 0);
+	}
+
+	public static void writeClustersNoSwapping(String string, List<AdultDataRowCluster> adultDataRowClusters) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public static void writeClustersSwapped(String string, List<AdultDataRowCluster> adultDataRowClusters) {
+		// TODO Auto-generated method stub
+		
 	}
 }

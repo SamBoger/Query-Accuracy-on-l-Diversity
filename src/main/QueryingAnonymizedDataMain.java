@@ -49,8 +49,9 @@ public class QueryingAnonymizedDataMain {
 		
 		
 		Collection<AdultDataRow> adultData = AdultDatabaseUtils.getAllAdultDataRows(INPUT_DATABASE_FILENAME);
-		new ClusterAdultRows(adultData);
-		
+		ClusterAdultRows algorithm = new ClusterAdultRows(adultData);
+		AdultDatabaseUtils.writeClustersNoSwapping("adult_clusters.sql", algorithm.adultDataRowClusters);
+		AdultDatabaseUtils.writeClustersSwapped("adult_clusters.sql", algorithm.adultDataRowClusters);
 		
 		System.out.println("DONE took " + ((System.currentTimeMillis() - curTime)/1000) + " seconds.");
 	}

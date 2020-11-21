@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import adultAttributes.AdultDataAttribute;
+import utils.Configuration;
 
 public class AdultDataRow {
 	public Map<String, AdultDataAttribute> adult_attributes;
@@ -32,5 +33,9 @@ public class AdultDataRow {
 			sb.append(att.label).append(": ").append(att.attribute_value).append("\n");
 		}
 		return sb.toString();
+	}
+
+	public String sensitiveValues() {
+		return Configuration.SENSITIVE_VALUE_KEY + ":" + adult_attributes.get(Configuration.SENSITIVE_VALUE_KEY);
 	}
 }

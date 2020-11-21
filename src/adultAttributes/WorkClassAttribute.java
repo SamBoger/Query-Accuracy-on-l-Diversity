@@ -1,8 +1,8 @@
 package adultAttributes;
 
-import adultAttributes.AdultDataAttribute;
+import adultAttributes.AdultStringDataAttribute;
 
-public class WorkClassAttribute extends AdultDataAttribute {
+public class WorkClassAttribute extends AdultStringDataAttribute {
 
 	public WorkClassAttribute(Object attributeValue, String lab) {
 		super(attributeValue, lab);

@@ -11,4 +11,6 @@ public abstract class AdultDataAttribute {
 	}
 	
 	public abstract boolean isValid();
+	
+	public abstract String toString();
 }
