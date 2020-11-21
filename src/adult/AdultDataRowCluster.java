@@ -19,19 +19,15 @@ public class AdultDataRowCluster {
 	public double maxFrequency = 0.0;
 	public Map<String, Integer> sensitiveValues;
 	public ArrayList<HashSet<String>> QISets;
-//	public Map<String, Integer> occupations;
-//	public Map<String, Integer> races;
 	
 	public AdultDataRowCluster(Collection<AdultDataRow> rows) {
 		sensitiveValues = new HashMap<String, Integer>();
 		
 		QISets = new ArrayList<HashSet<String>>(QI_COLUMNS.length);
-//		occupations = new HashMap<String, Integer>();
-//		races = new HashMap<String, Integer>();
 		this.rows = rows;
 		double totalAge = 0.0;
 		double totalSex = 0.0;
-		for(String label : QI_COLUMNS) {
+		for(int i = 0; i < QI_COLUMNS.length; i++) {
 			QISets.add(new HashSet<String>());
 		}
 		for(AdultDataRow row : rows) {
@@ -42,9 +38,6 @@ public class AdultDataRowCluster {
 			for(int i = 0; i < QI_COLUMNS.length; i++) {
 				addToSet((String)row.adult_attributes.get(QI_COLUMNS[i]).attribute_value, QISets.get(i));
 			}
-			
-//			addToFrequencyMap((String)row.adult_attributes.get(OCCUPATION_LABEL).attribute_value, occupations);
-//			addToFrequencyMap((String)row.adult_attributes.get(RACE_LABEL).attribute_value, occupations);
 		}
 		averageAge = totalAge / (rows.size()*MAX_AGE_VALUE);
 		averageSex = totalSex / rows.size();

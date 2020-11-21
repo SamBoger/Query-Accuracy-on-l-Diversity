@@ -192,10 +192,6 @@ public class AdultDatabaseUtils {
 		}
 	}
 	
-	
-	
-	
-	
 	public static void writeCSVDataToDatabase(String filename, String databaseFilename, boolean sampled, int samplingModifier) throws IOException, SQLException {
 		writeCSVDataToDatabase(filename, databaseFilename, ",\\s*", sampled, samplingModifier);
 	}

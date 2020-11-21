@@ -162,7 +162,6 @@ public class Configuration {
 	public static final String SENSITIVE_VALUE_KEY = OCCUPATION_LABEL;
 	
 	public static final String INPUT_DATABASE_FILENAME = "adult.sql";
-//	public static final String INPUT_DATABASE_FILENAME = "census.sql";
 	
 	public static final double RACE_DISTANCE_FACTOR = 0.5;
 	public static final double OCCUPATION_DISTANCE_FACTOR = 0.1;
