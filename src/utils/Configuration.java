@@ -163,14 +163,23 @@ public class Configuration {
 	
 	public static final String INPUT_DATABASE_FILENAME = "adult.sql";
 	
-	public static final double RACE_DISTANCE_FACTOR = 0.5;
-	public static final double OCCUPATION_DISTANCE_FACTOR = 0.1;
+	public static final String CLUSTER_SWAPPED_DATABASE_NAME = "adult_swapped_education5.sql";//"adult_swapped_race_weight.sql";
+	public static final String ORIGINAL_DATABASE = "adult.sql";
+	public static final String BASIC_SWAPPED_DATABASE = "adult_swapped.sql";
 	public static final String[] QI_COLUMNS = {
 			RACE_LABEL,
 			EDUCATION_LABEL
 	};
 	public static final Double[] QI_DISTANCE_WEIGHTS = {
-			0.5,
-			0.5
+			1.0,
+			5.0
 	};
+	
+	public static final Double AGE_WEIGHT = 1.0;
+	public static final Double SEX_WEIGHT = 1.0;
+	
+	public static final int K_FOR_ANONYMITY = 10;
+	public static final int L_FOR_DIVERSITY = 5;
+	public static final double THETA_FOR_FREQUENCY = 0.3;
+	
 }

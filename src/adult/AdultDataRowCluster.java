@@ -6,8 +6,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+
+import adultAttributes.AdultDataAttribute;
 
 
 
@@ -19,6 +23,7 @@ public class AdultDataRowCluster {
 	public double maxFrequency = 0.0;
 	public Map<String, Integer> sensitiveValues;
 	public ArrayList<HashSet<String>> QISets;
+	
 	
 	public AdultDataRowCluster(Collection<AdultDataRow> rows) {
 		sensitiveValues = new HashMap<String, Integer>();
@@ -151,5 +156,82 @@ public class AdultDataRowCluster {
 			maxSensitiveValue = Math.max(maxSensitiveValue, numSensValues);
 		}
 		return (0.0 + maxSensitiveValue) / rows.size();
+	}
+	
+	public List<AdultDataRow> getSwappedRows(Random rand) {
+		List<AdultDataRow> swappedRows = new ArrayList<AdultDataRow>(rows.size());
+		List<List<AdultDataAttribute>> nonSensitiveValues = new ArrayList<List<AdultDataAttribute>>();
+		List<List<AdultDataAttribute>> sensitiveValues = new ArrayList<List<AdultDataAttribute>>();
+	
+		for(AdultDataRow row : rows) {
+			sensitiveValues.add(row.getSensitiveAttributes());
+			nonSensitiveValues.add(row.getNonSensitiveAttributes());
+		}
+		sensitiveValues = randomize(sensitiveValues, rand);
+		nonSensitiveValues = randomize(nonSensitiveValues, rand);
+		
+		for(int i = 0; i < sensitiveValues.size(); i++) {
+			List<AdultDataAttribute> allAtributes = new ArrayList<AdultDataAttribute>();
+			allAtributes.addAll(sensitiveValues.get(i));
+			allAtributes.addAll(nonSensitiveValues.get(i));
+			swappedRows.add(new AdultDataRow(allAtributes));
+		}
+		
+		return swappedRows;
+	}
+
+	private <T> List<T> randomize(List<T> values, Random rand) {
+		int[] newIndices = new int[values.size()];
+		for(int i = 0; i < newIndices.length; i++) {
+			newIndices[i] = i;
+		}
+		
+		for(int i = 0; i < newIndices.length; i++) {
+			int swapFrom = i+rand.nextInt(newIndices.length-i);
+			int temp = newIndices[i];
+			newIndices[i] = newIndices[swapFrom];
+			newIndices[swapFrom] = temp;
+		}
+		
+		List<T> randomizedList = new ArrayList<T>(values.size());
+		for(int i = 0; i < values.size(); i++) {
+			randomizedList.add(values.get(newIndices[i]));
+		}
+		return randomizedList;
+	}
+	
+	private static <T> List<T> randomizeStatic(List<T> values, Random rand) {
+		int[] newIndices = new int[values.size()];
+		for(int i = 0; i < newIndices.length; i++) {
+			newIndices[i] = i;
+		}
+		
+		for(int i = 0; i < newIndices.length; i++) {
+			int swapFrom = i+rand.nextInt(newIndices.length-i);
+			int temp = newIndices[i];
+			newIndices[i] = newIndices[swapFrom];
+			newIndices[swapFrom] = temp;
+		}
+		
+		List<T> randomizedList = new ArrayList<T>(values.size());
+		for(int i = 0; i < values.size(); i++) {
+			randomizedList.add(values.get(newIndices[i]));
+		}
+		return randomizedList;
+	}
+	
+	public static void main(String[] args) {
+		ArrayList<Integer> myList = new ArrayList<Integer>();
+		myList.add(1);
+		myList.add(2);
+		myList.add(3);
+		myList.add(4);
+		myList.add(5);
+		myList.add(6);
+		myList.add(7);
+		myList.add(8);
+		myList.add(9);
+		myList.add(10);
+		System.out.println(randomizeStatic(myList, new Random()));
 	}
 }

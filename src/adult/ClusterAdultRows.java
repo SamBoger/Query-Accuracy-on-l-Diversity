@@ -14,9 +14,7 @@ public class ClusterAdultRows {
 	public ArrayList<AdultDataRow> adultDataRows;
 	private ArrayList<AdultDataRow> backupQueue;
 	
-	private static final int K_FOR_ANONYMITY = 10;
-	private static final int L_FOR_DIVERSITY = 5;
-	private static final double THETA_FOR_FREQUENCY = 0.5;
+	
 	
 	
 	public ClusterAdultRows(Collection<AdultDataRow> adultDataRows) {
@@ -285,7 +283,7 @@ public class ClusterAdultRows {
 		double averageSexDifference = averageSex(cluster1)-averageSex(cluster2);
 		totalSexDistance *= averageSexDifference*averageSexDifference;
 		
-		double totalDistance = totalAgeDistance + totalSexDistance; //+ (1-dotProduct);
+		double totalDistance = totalAgeDistance * AGE_WEIGHT + totalSexDistance * SEX_WEIGHT ; //+ (1-dotProduct);
 		
 		
 		for(int i = 0; i < QI_COLUMNS.length; i++) {

@@ -1,6 +1,5 @@
 package adult;
 
-import static utils.Configuration.ADULT_DATA_SPECIFICATION;
 import static utils.Configuration.*;
 
 import java.io.BufferedReader;
@@ -15,13 +14,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import adultAttributes.*;
 
 public class AdultDatabaseUtils {
 	private static Connection conn = null;
 	public static final int MAX_LINES_TO_PROCESS = 1000;
+	private static Random rand = new Random(0);
 	
 	public static void createSqliteDb(String databaseFilename) throws SQLException {
 		try (Connection conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename)) {
@@ -192,6 +195,75 @@ public class AdultDatabaseUtils {
 		}
 	}
 	
+	public static void writeAdultDataToDatabase(String databaseFilename, Collection<AdultDataRow> rowsData) throws SQLException {
+		ArrayList<Object[]> dataToWrite = new ArrayList<Object[]>(AdultDatabaseUtils.MAX_LINES_TO_PROCESS);
+		int rowsToWrite = 0;
+		for(AdultDataRow dataRow : rowsData) {
+			Object[] dataRowValues = new Object[ADULT_DATA_SPECIFICATION.length];
+			for(int i = 0; i < ADULT_DATA_SPECIFICATION.length; i++) {
+				dataRowValues[i] = dataRow.adult_attributes.get(ADULT_DATA_SPECIFICATION[i].label).attribute_value;
+			}
+			dataToWrite.add(dataRowValues);
+			rowsToWrite++;
+			if(rowsToWrite >= AdultDatabaseUtils.MAX_LINES_TO_PROCESS) {
+				fillRows(databaseFilename, dataToWrite);
+				dataToWrite.clear();
+				rowsToWrite = 0;
+			}
+		}
+		if(rowsToWrite > 0) {
+			fillRows(databaseFilename, dataToWrite);
+		}
+	}
+	
+	public static Map<String, Integer> runOccupationsQuery(String databaseFilename, int minAge, int maxAge, String education, String sex, String race) {
+		Map<String, Integer> occupationCounts = new HashMap<String, Integer>();
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
+			PreparedStatement ps = conn.prepareStatement("SELECT occupation, COUNT(*) as total FROM adult WHERE age > ? and age < ?  and education = ? and sex  = ? and race = ? GROUP BY occupation");
+			ps.setInt(1, minAge);
+			ps.setInt(2, maxAge);
+			ps.setString(3, education);
+			ps.setString(4, sex);
+			ps.setString(5, race);
+			ps.execute();
+			
+			ResultSet resultSet = ps.getResultSet();
+			while(resultSet.next()) {
+				
+				String occupation = resultSet.getString("occupation");
+				int total = resultSet.getInt("total");
+				occupationCounts.put(occupation, total);
+			}
+		}  catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+		return occupationCounts;
+	}
+	
+	public static int runCountQuery(String databaseFilename, int minAge, int maxAge, String education, String sex, String race, String occupation) {
+		int returnVal = -1;
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
+			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) as total FROM adult WHERE age > ? and age < ?  and education = ? and sex  = ? and race = ? and occupation = ?");
+			ps.setInt(1, minAge);
+			ps.setInt(2, maxAge);
+			ps.setString(3, education);
+			ps.setString(4, sex);
+			ps.setString(5, race);
+			ps.setString(6, occupation);
+			ps.execute();
+			
+			ResultSet resultSet = ps.getResultSet();
+			if(resultSet.next()) {
+				returnVal = resultSet.getInt("total");
+			}
+		}  catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+		return returnVal;
+	}
+	
 	public static void writeCSVDataToDatabase(String filename, String databaseFilename, boolean sampled, int samplingModifier) throws IOException, SQLException {
 		writeCSVDataToDatabase(filename, databaseFilename, ",\\s*", sampled, samplingModifier);
 	}
@@ -200,13 +272,22 @@ public class AdultDatabaseUtils {
 		writeCSVDataToDatabase(filename, databaseFilename, false, 0);
 	}
 
-	public static void writeClustersNoSwapping(String string, List<AdultDataRowCluster> adultDataRowClusters) {
-		// TODO Auto-generated method stub
-		
+	public static void writeClustersNoSwapping(String filename, List<AdultDataRowCluster> adultDataRowClusters) throws SQLException {
+		createSqliteDb(filename);
+		for(AdultDataRowCluster cluster : adultDataRowClusters) {
+			writeAdultDataToDatabase(filename, cluster.rows);
+		}
 	}
 
-	public static void writeClustersSwapped(String string, List<AdultDataRowCluster> adultDataRowClusters) {
-		// TODO Auto-generated method stub
-		
+	public static void writeClustersSwapped(String filename, List<AdultDataRowCluster> adultDataRowClusters) throws SQLException {
+		createSqliteDb(filename);
+		int numRows = 0;
+		for(AdultDataRowCluster cluster : adultDataRowClusters) {
+			List<AdultDataRow> swappedCluster = cluster.getSwappedRows(rand);
+			writeAdultDataToDatabase(filename, swappedCluster);
+			numRows += swappedCluster.size();
+			
+		}
+		System.out.println("Wrote " + numRows + " swapped rows");
 	}
 }
