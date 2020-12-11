@@ -92,80 +92,135 @@ Different prior works in this field address these design decisions separately wh
 %TODO: Quasi-identifiers, sensitive values
 
 \subsection{Unique Contributions}
-% MOVE to subsection of introduction
-This project intends to combine the insights from these different works to describe a promising anonymization technique that adequately protects privacy, preserves utility of the dataset, and produces an easy-to-use resulting dataset. In particular, the proposed method uses a customized distance function\cite{jiaPad} to cluster, and performs data swapping\cite{soriaSwapping} within these clusters, to produce an l-diverse\cite{machanavajjhalalDiversity} anonymized dataset.
+This project intends to combine the insights from these different works to describe a promising anonymization technique that adequately protects privacy, preserves utility of the dataset, and produces an easy-to-use resulting dataset. In particular, the proposed method uses a customized distance function\cite{jiaPad} to cluster the input data and performs data swapping\cite{soriaSwapping} within these clusters to produce a K-anonymous, L-diverse\cite{machanavajjhalalDiversity}, and $\theta$-diverse anonymized dataset.
 
 \section{Related Work}
 \subsection{Anonymization Definitions}
 K-anonymity\cite{sweeneykAnonymity} is one of the most influential works for defining privacy-preserving anonymization. Removing personally identifiable information from datasets can still leave data that act as quasi-identifiers (QIs) which can be combined with separate data sources by an adversary to re-identify an individual. If the original dataset has sensitive information about individuals, then this re-identification leaks the association of that individual to those sensitive values and thus the effort to remove the identifiers was insufficient to preserve privacy. K-anonmyity address this concern by ensuring that at least $k$ rows have identical QIs so that any individual effectively blends in with at least $k-1$ other individuals. To create these homogeneous groups, the QIs are mapped onto a less granular space, e.g. full birth date may be mapped instead to birth year. Furthermore, certain rows can be suppressed (removed from the dataset entirely) to reduce the amount of generalization necessary. Now, individual re-identification from outside data sources can only imply membership in a group of size at least $k$. Many subsequent works expanded on this original definition and discussed improvements to this method.
 
-L-diversity\cite{machanavajjhalalDiversity} is one such extension to this method which places a further constraint on the anonymized dataset that each group of records with identical QIs must also satisfy. L-diversity can be used to describe a couple different properties. Here, we call a group is L-diverse if and only if every group contains at least L distinct sensitive values, and the table is L-diverse if and only if every record belong to a group that is L-diverse. Another property we will use is $\theta$-diverse. Call the size of a group of records N, and the most frequent sensitive value in the group S. The group is $\theta$-diverse if and only if $\frac{S}{N}<\theta$, and the table is $\theta$-diverse if and only if every record belong to a group that is $\theta$-diverse. Intuitively this means that learning which group an individual belongs to will never reveal its associated sensitive value with probability greater than $\theta$. Without this property, it is possible that all sensitive values for a K-anonymous group are the same, and identifying an individual within that group reveals their sensitive value regardless of the group's size. Furthermore, auxiliary information may exist that one or more sensitive value is highly unlikely for an individual, so a diverse set of sensitive values within each group protects against this process of elimination style of attack. The tunable parameters L and $\theta$ in this scheme control the likelihood of this leakage by varying the diversity of every group.
+L-diversity\cite{machanavajjhalalDiversity} is one such extension to this method which places a further constraint on the anonymized dataset that each group of records with identical QIs must also satisfy. L-diversity can be used to describe a couple different properties. Here, we call a group is L-diverse if and only if every group contains at least L distinct sensitive values, and the table is L-diverse if and only if every record belong to a group that is L-diverse. This paper has more definitions and clarifications of this property, but we will be using this basic form that simply counts distinct sensitive values for consistency with other cited works.
+
+A related condition to L-diversity is $\theta$-diversity as defined by this paper\cite{yangEnhanced} on clustering that will also be referenced later. Call the size of a group of records N, and the most frequent sensitive value in the group S. The group is $\theta$-diverse if and only if $\frac{S}{N}<\theta$, and the table is $\theta$-diverse if and only if every record belong to a group that is $\theta$-diverse. Intuitively this means that learning which group an individual belongs to will never reveal its associated sensitive value with probability greater than $\theta$. Without this property, it is possible that all sensitive values for a K-anonymous group are the same, and identifying an individual within that group reveals their sensitive value regardless of the group's size. Furthermore, auxiliary information may exist that one or more sensitive value is highly unlikely for an individual, so a diverse set of sensitive values within each group protects against this process of elimination style of attack. The tunable parameters L and $\theta$ in this scheme control the likelihood of this leakage by varying the diversity of every group.
 
 Further restrictions have also been considered, including T-closeness\cite{litCloseness} where each group of homogenized records must contain a similar (within a factor of T) distribution of sensitive values as the entire original table. This emphasizes privacy guarantees at the expense of increased difficulty in computing the anonymized table and decreased utility for analysis. For this project we do not consider T-closeness although similar ideas would apply in principle.
 
 \subsection{Methods of Computing Anonymizations}
-In order to maintain better utility of the anonymized table, as well as more efficient computation of the anonymized dataset, many papers have explored clustering methods for constructing K-anonymity or L-diversity groups rather than arbitrary groupings. By grouping together similar records, the correlations that exist in the original dataset can be better preserved while still providing the privacy guarantees of these anonymization methods\cite{niClustering}\cite{liuDensity}\cite{chiuClustering}. Different clustering algorithms are described in these works (weighted feature C-means, density clustering) which all seek to collect similar records into groups that will then be generalized to produce the anonymized datasets. Most of these methods address K-anonymity only, as efficiently computing L-diverse and $\theta$-diverse clusters presents further challenges. One algorithm for computing K-anonymous, L-diverse, and $\theta$-Diverse clusters demonstrates effective in practice but the algorithm lacks complete details and guarantees in the general case \cite{yangEnhanced} which is adapted for this work.
+In order to maintain better utility of the anonymized table, as well as more efficient computation of the anonymized dataset, many papers have explored clustering methods for constructing K-anonymity or L-diversity groups rather than arbitrary groupings. By grouping together similar records, the correlations that exist in the original dataset can be better preserved while still providing the privacy guarantees of these anonymization methods\cite{niClustering}\cite{liuDensity}\cite{chiuClustering}. Different clustering algorithms are described in these works (weighted feature C-means, density clustering) which all seek to collect similar records into groups that will then be generalized to produce the anonymized datasets. Most of these methods address K-anonymity only, as efficiently computing L-diverse and $\theta$-diverse clusters presents further challenges. One algorithm for computing K-anonymous, L-diverse, and $\theta$-Diverse clusters is effective in practice but the algorithm lacks complete details and guarantees in the general case \cite{yangEnhanced}.
 
-In addition to varying the clustering algorithms, other work has modified the distance metric between rows to better preserve utility for a particular use case\cite{jiaPad}. Here, the data analysts using the anonymized data contribute training data regarding which rows they consider similar to teach the anonymization system a customized distance metric. Clustering according to this metric still produces a K-anonymous dataset, but the groups contain rows that are more similar according to this customized notion of distance.
+In addition to varying the clustering algorithms, other prior work has modified the distance metric between rows to better preserve utility for a particular use case\cite{jiaPad}. Here, the data analysts using the anonymized data contribute training data regarding which rows they consider similar to teach the anonymization system a customized distance metric. Clustering according to this metric still produces a K-anonymous dataset, but the groups contain rows that are more similar according to this customized notion of distance.
 
-Another approach to preserving utility is proposed and analyzed in \cite{soriaSwapping}, where instead of producing a dataset with groups of rows that have identical quasi-identifiers through generalization and suppression, all records in a given group are randomly swapped with their associated sensitive values. Even for an adversary with knowledge of which rows were in the same group, this ensures a similar guarantee as a traditional $\theta$-diverse table where re-identifying a certain row only reveals the correct sensitive value with probability $\leq\theta$. 
+Another approach to preserving utility is proposed and analyzed in this paper\cite{soriaSwapping}, where instead of producing a dataset with groups of rows that have identical quasi-identifiers through generalization and suppression, all records in a given group are randomly swapped with their associated sensitive values. Even for an adversary with knowledge of which rows were in the same group, this ensures a similar guarantee as a traditional $\theta$-diverse table where re-identifying a certain row only reveals the correct sensitive value with probability $\leq\theta$. 
 
-Similarly to shuffling within each group of records, \cite{xiaoAnatomy} proposes publishing the sets of QIs in a separate table than the sensitive values but with a join key specific to each group--which they call an anatomy. Therefore, similarly to\cite{soriaSwapping}, the QIs in the original dataset are published but it is not revealed exactly which sensitive value corresponds to which row. This paper evaluates the increased utility of this method by measuring query accuracy.
+Similarly to shuffling within each group of records, \cite{xiaoAnatomy} proposes publishing the sets of QIs in a separate table than the sensitive values but with a join key specific to each group--which they call an anatomy. Therefore, similarly to data swapping\cite{soriaSwapping}, the QIs in the original dataset are published but it is not revealed exactly which sensitive value corresponds to which row.
 
 \subsection{Utility Analysis}
-There are mulitple techniques for this analysis. Most common are table-wide statistical metrics (e.g. \cite{soriaSwapping}) and the quality of machine learning model trained over the anonymized data (e.g. \cite{sangogboyePad}). Earlier work\cite{xiaoAnatomy} uses a test suite of queries to assess utility. Other efforts attempt to reconcile the different metrics but conclude that it is difficult to correlate the statistical measures of the anaonymized datasets to the effectiveness of models trained over those datasets\cite{vsarvcevicEffectiveness}.
+There are mulitple techniques for analyzing how well utility is preserved in the anonymized output of these algorithms as compared to the original data. Most common are table-wide statistical metrics (e.g. \cite{soriaSwapping}) and the quality of machine learning model trained over the anonymized data (e.g. \cite{sangogboyePad}). Earlier work\cite{xiaoAnatomy} uses a test suite of queries to assess utility. Other efforts attempt to reconcile the different metrics but conclude that it is difficult to correlate the statistical measures of the anaonymized datasets to the effectiveness of models trained over those datasets\cite{vsarvcevicEffectiveness}.
 
 The anatomy work\cite{xiaoAnatomy} creates tests counting queries by randomly choosing attribute values to select for at various configurations. They compute the relative error by running the same queries on a dataset with no anonymization versus L-diverse datasets produced with generalization or anatomy. Their results demonstrate that the relative error in answering these queries for anatomy is less than the relative error for generalization.
 
 To evaluate data swapping\cite{soriaSwapping}, the authors quantify the improved utility of a data swapped and generalized tables at the aggregate level by computing and comparing the correlation between QIs and sensitive values in the different anonymized datasets compared to the original dataset. Data swapping preserves correlation much better than generalization in their experiments.
 
-\section{Clustering Method and Data Analysis}
-This section will describe the possible relationships between the anonymization’s clustering method and the queries to be run over the anonymized data. Specifically, this will introduce the notation to describe the QIs that are prioritized for clustering, the other QIs, and the sensitive values. The details depend on the implementation of clustering and the configurations that will be chosen.
-
-\section{Experimental Setup}
-
-\subsection{Dataset}
-The dataset that most frequently occurs in prior works on this topic is the UCI ADULT database\cite{adultDatabase} which will be used here as well. This dataset contains census records with demographic, financial, and other personal information.
-
-The experiments will use age, race, sex, and education as the quasi-identifiers and occupation as the sensitive value. These are fields defined in the dataset as coming from a set of enumerated values, with all but age being strings, and ages are integers in the range $[18,90]$.
-
-\subsection{Privacy Implementation}
-The default anonymization will be performed with K-anonymous groups of size $K=10$ meaning every group has at least 10 rows, L-diversity at $L=5$ meaning every group has at least 5 sensitive values, and $\theta=.3$ meaning no sensitive value accounts for more than $\frac{3}{10}$ of the sensitive values in each group. The sensitive values in the group are then swapped randomly among every group member.
-
-Clustering is done with an algorithm based on prior work\cite{yangEnhanced} with some of the open-ended steps filled in based on trial and error. This algorithm is not guaranteed to produce a valid clustering in that it may fail to place a large percentage of the rows in clusters and/or run for an intracible amount of time in general. However, on this dataset and with these choices of parameters, the algorithm performs very well and satisfies these strict privacy constraints.
-
-\subsection{Distance Metrics}
-The clustering algorithm is agnostic as to the distance metric used. Here, the clusters are compared based on a weighted sum of orthogonal comparisons. For age and sex the algorithm computes the average of each weighted between 0 and 1, with the two sexes present in the dataset arbitrarily mapped to 1 and 0 respectively, and ages linearly mapped to [0,1]. These cluster averages are each then combined using weighted univariate distance as discussed in this prior work \cite{domingePracticalCluster}. The other categorical dimensions are defined to be of distance 1 if there is any value in one set that is not present in the other and 0 otherwise. The total distance between two clusters is then a linear combination of each of these distances.
-
-The weights of the linear combination, which default to 1, impact the utility of the result with respect to certain types of queries. For instance, weighting the age distance more heavily will produce clusters that have lower variance of age within clusters. These weights will be varied over the different experiments below to demonstrate how this impacts analyzing the resulting dataset.
-
-\subsection{Analysis}
-\begin{enumerate}
-    \item Naive cluster generation for l-diversity.
-    \item Custom distance metrics for l-diversity.
-    \item For each, their performance on a suite of queries as compared to running those queries over the full table (non-anonymized).
-\end{enumerate}
-
-\section{Attacking Anonymized Data}
+\subsection{Attacking Anonymized Data}
 Prior work on the privacy of k-anonymity addresses privacy risks in different ways. The original papers make reasonable assumptions about the types of background knowledge an adversary might have when doing formal calculations about probabilities of a successful attack. They note that in principle it is impossible to account for arbitrary background knowledge of attackers.
 
 Subsequent works advance the theory surrounding this topic by bringing in techniques from other areas of computer science. Information theory can provide a framework for considering the tension in anonymization between providing accurate information to the legitimate users of the anonymized dataset while withholding private information from adversaries with access to the same dataset\cite{liuInfoTheory}. With a more sophisticated model of this tradeoff, the problem can be viewed as an optimization of this tradeoff for average or worst-case information leakage to an adversary\cite{duInfoTheory}.
 
 For any particular k-anonymous dataset, it is possible to launch a customized attack with background knowledge to attempt to recover information about the original dataset. One such example \cite{schweeEval} was able to reidentify particular rooms in a k-anonymous dataset unless the anonymization also employed suppression to remove outliers in the data.
 
+\section{Clustering Method}
+The algorithm used for clustering follows the structure of the algorithm in prior work\cite{yangEnhanced} on computing clusters that satisfy K-anonymity, L-diversity, and $\theta$-diversity, which together will be called \emph{K,L,$\theta$-Diversity}. At a high level, this algorithm works with the following steps:
+Input: N points.
+Output: K,L,$\theta$-Diversity satisfying clusters containing a subset of the N points.
+\begin{enumerate}
+    \item If there any unassigned points, take an arbitrary point and make a new cluster with this point as the only element.
+    \item Find the closest unassigned point to the current cluster. If the new point has a sensitive value not present in the cluster, assign it to the cluster. Otherwise, assign it to a backup queue which will be emptied later. Repeat this step until the cluster has L distinct values, then go back to step 1. If there are no unassigned points, go to the next step instead.
+    \item For each point in the backup queue, find the closest eligible cluster. An eligible cluster must have fewer than K elements and adding this new point must not violate the $\theta$-diversity property. If no clusters are eligible, unassign this new point. Otherwise, add this point to this closest eligible cluster.
+    \item If any points are unassigned (i.e. there were no eligible cluster for a point in the previous step), go back to step 1 and attempt to form new clusters. Otherwise proceed.
+    \item Attempt to merge clusters until all are satisfied according to the privacy requirements. To do this, for each cluster with K, L, or $\theta$ diversity unsatisfied, evaluate merging it with each other cluster. Identify the closest cluster where, if merged, the result would satisfy all diversity requirements. If one exists, merge those clusters. Otherwise, merge it with the closest cluster that does not violate the $\theta$ diversity requirement if one exists. If none exist, this cluster cannot be included in the output.
+    \item Output all clusters that satisfy K,L,$\theta$-Diversity.
+\end{enumerate}
+
+The runtime is difficult to evaluate in general. Any point assigned to a cluster can never be unassigned. However, points assigned to the backup queue can be unassigned. Therefore each execution of steps 1-4 is only certain to assign one point to a cluster. Additionally, the points and clusters are assigned and merged greedily so the output is not necessarily optimal in terms of minimizing distances within clusters or other global metrics. Finally, it is possible that some or all points will not be included in the output since some or all clusters are not guaranteed to satisfy the privacy constraints.
+
+The benefit of this algorithm is that in practice it can run quickly, can output clusters that contain all the input points, and satisfies all three strict privacy constraints. The implementation of the clustering algorithm for this work and the experimental setup can be found on \hyperlink{https://github.com/SamBoger/Query-Accuracy-on-l-Diversity}{GitHub}.
+
+\section{Experimental Setup}
+
+\subsection{Dataset}
+The dataset that most frequently occurs in prior works on this topic is the UCI ADULT database\cite{adultDatabase} which will be used here as well. This dataset contains census records with demographic, financial, and other personal information.
+
+The experiments will use age, race, sex, and education as the quasi-identifiers and occupation as the sensitive value. These are fields defined in the dataset as coming from a set of enumerated values, with all but age being strings, and ages are integers in the range $[17,90]$.
+
+%TODO: Table with QIs, dimensionality, sensitive values, dimensionality
+
+\subsection{Privacy Implementation}
+The default anonymization will be performed by forming groups with the following configurations, which together satisfy K,L,$\theta$-Diversity:
+\begin{itemize}
+    \item K-anonymity with $K=10$ meaning every group has at least 10 rows.
+    \item L-diversity with $L=5$ meaning every group has at least 5 distinct sensitive values.
+    \item $\theta$-diversity with $\theta=0.3$ meaning no sensitive value accounts for more than $\frac{3}{10}$ of the sensitive values in each group.
+\end{itemize}
+
+Clustering is done with the algorithm described in the pervious section. On this dataset and with these choices of parameters, the adapted algorithm succeeds in running, outputs clusters containing all input rows, and satisfies these strict privacy constraints. The runtime to produce an anonymization was around 3 minutes running on a [TODO: PC specs].
+
+%TODO: Cluster statistics?
+
+Once the clusters are computed, the sensitive values in the group are then permuted randomly between members of the cluster then all the rows of all the cluster are output as an anonymized table. This table has identical schema and data to the original dataset except for the permuted sensitive values.
+
+\subsection{Distance Metrics}
+The clustering algorithm is agnostic as to the distance metric used. Here, the clusters are compared based on a weighted sum of orthogonal comparisons. For age and sex the algorithm computes the average of each weighted between 0 and 1, with the two sexes present in the dataset arbitrarily mapped to 1 and 0 respectively, and ages linearly mapped to [0,1]. These cluster averages are each then combined using weighted univariate distance as discussed in this prior work \cite{domingoPracticalCluster}. The other categorical dimensions are defined to be of distance 1 if there is any value in one set that is not present in the other and 0 otherwise. The total distance between two clusters is then a linear combination of each of these distances.
+
+The weights of the linear combination, which default to 1, impact how clustering behaves. For instance, weighting the age distance more heavily will produce clusters that have lower variance of age within clusters. These weights were varied in the different experiments below to demonstrate how this impacts analyzing the resulting dataset. Along with the default distance metric with the default weights of 1, four additional datasets were produced each with a weight of 5 on one of the different quasi-identifiers.
+
+% TODO: Add simple table of dataset names
+[TODO: Add simple table of dataset names]
+
+\subsection{Simulations}
+Running simulations of randomly generated queries, using different parameters, reveals how these different datasets perform depending on what queries are issued. The hypothesis behind the design of this simulation is that certain kinds of queries may benefit from clustering that is aware of the types of queries to be issued.
+
+To understand how the different distance metrics affect utility, the following experiments were run. Queries were randomly generated and run on each of the datasets to compare their results. Every query returns the frequency count of occupations, which is the sensitive value in our dataset, restricted to a subset of the quasi-identifier's values. Specifically, for each quasi-identifier, a random subset of the possible values are included in the WHERE clause of the query. Building on prior evaluation methods\cite{xiaoAnatomy}, the number of values to include for each quasi-identifier is called the selectivity of that dimension. By default, each selectivity is set to include approximately half of the possible values of a quasi-identifier for each query, so of the 16 possible education values in the dataset, 8 are randomly selected for each query. The queries therefore look like the following:
+
+%TODO: format, turn into equation
+[TODO: format properly]
+SELECT occupation, COUNT(*) as total from adult WHERE A0 in ([A0\_vals]) AND A1 in ([A1\_vals]) ... AND An in ([An\_vals]) GROUP BY occupation;
+
+A random query is generated according to this procedure and executed across all datasets: the original dataset, the default swapped dataset, and each of the four datasets with customized distance metrics. Each resulting frequency count is then compared to that of the original unmodified dataset using the chi squared distance function.
+
+One round of simulation consists of 1000 such random queries. For each dataset, the sum of the chi squared distance between itself and the original dataset represents the total error introduced by the anonymization. Finally, dividing the total error for one dataset by the default data swapped dataset's total error produces the relative error of using that customized distance function instead of the default. A value less than 1 indicates that the custom distance function reduced the total error while a value less than 1 indicates the opposite.
+%TODO: write out formulae for this.
+[TODO: write out formulae for this.]
+
+%TODO: add DEFAULT relative error table for each customized dataset.]
+[TODO: produce simple table with the name of each dataset and the relative error for each dataset with default delectivity]
+
+\subsection{Varying Selectivity}
+The selectivity for each quasi-identifier affects how well a particular dataset will perform in the simulation. For example the extreme case where every quasi-identifier has $100\%$ selectivity results in any anonymized dataset performing perfectly, since the whole dataset is selected by the query, and the anonymized dataset has the same overall frequency count of sensitive values as the original. The other extreme where no rows are selected also results, vaccuously, in all datasets performing equally well.
+
+Varying one quasi-identifiers' selectivity at a time reveals the impact of the different distance metrics used in clustering. In the following charts, each of the four quasi-identifiers had their selectivity varied from the minimum to maximum possible values. For instance, with the education quasi-identifier, the simulation was run with default selectivity for the other quasi-identifiers, but with education selectivity varying from including only one random education value in the query to all 16. At each selectivity, the chart shows the relative error for each dataset. The charts also show the default selectivity as a vertical line.
+
+[TODOS: Add selectivity varying line charts]
+%[TODOS: 
+%- Add default selectivity line to charts
+%- improve charts format, labelling.
+%- add charts.]
+
+\subsection{Analysis}
+
+The basic simulation with default selectivities shows that custom distance metrics produce similar utility when making random queries.
+
+Varying selectivity, however, shows that the distance metric can be tailored to the types of queries that will be made. \emph{At low selectivities for a given quasi-identifier, the dataset produced with a distance metric weighted towards that quasi-identifier performed best.} This matches the intuition behind custom distance function and clustering, as the sensitive values are swapped between rows with similar quasi-identifiers according to that distance function. Concretely, if the clustering prioritizes grouping together rows with similar education values, then querying the sensitive values corresponding to specific education values will have less error than with generic clustering.
+
 \section{Privacy Properties}
-The primary privacy property of these methods is to reduce the likelihood of an adversary associating an  entity to its sensitive value. Prior work on K-anonymity, L-diversity, and $\theta$-diversity assume that an adversary can still reidentify a row within a group, but hides the sensitive value among the other members of the group.
+The primary privacy goal of all the anonymization methods covered in this paper is to reduce the likelihood of an adversary associating an  entity to its sensitive value. Prior work on K-anonymity, L-diversity, and $\theta$-diversity assume that an adversary can identify an individual with a row within a group, but hides the sensitive value among the other members of the group.
 
-This solution further assumes that although the output does not indicate which group a row belongs to, that the adversary can still figure this out. In an extreme case where the clusters are disjoint across a particular attribute like age, and the adversary knows the age of their target, this assumption is plausible. In a typical case, it is at least an extra layer of obscurity that the groups are not explicitly revealed, but the privacy properties hold in any case.
+In this data-swapping implementation, we further assume that although the output does not indicate which cluster a row belongs to, that the adversary can still figure this out. In an extreme case where the clusters are disjoint across a particular attribute like age, and the adversary knows the age of their target, this assumption is plausible. In a typical case, it is at least an extra layer of obscurity that the clusters are not explicitly revealed, but the privacy properties hold even it it were revealed.
 
-By ensuring that every group meets the requirements of K,L,and $\theta$ diversity, this solution achieves the privacy properties of each.
+By ensuring that every cluster meets the requirements of K,L,$\theta$-Diversity, this solution gains the privacy properties of each. Although these are not perfect individually nor in combination, as evaluated in this critique\cite{domingoCritique}, they do offer non-negligible benefits. It is worth noting that perhaps clustering could improve resilience against attackers with background knowledge. For example, if the adversary has to guess which sensitive value corresponds to a given row within a cluster, they can icnrease their odds of a successful guess by ruling out unlikely or implausible values. If a cluster has a wide range of ages, for example, then an adversary might guess that it's highly unlikely a 17 year-old has the occupation of "Exec-managerial". However, given that the clusters try to include members with similar quasi-identifiers, these implausible values are likely less frequent.
 
-[Clustering along a dimension reduces implausible sensitive values]
-
-Another desired privacy property could be to prevent an adversary form learning whether an entity is present in the dataset at all, regardless of their sensitive value. This is a fundamental weakness of both the anatomy and data swapping approaches, since the full set of quasi-identifiers are present in the anonymized dataset, giving the adversary a very good chance of succeeding in such a membership test. However, as mentioned, none of these methods fully address membership testing as even a K,L, and $\theta$-anonymized dataset using generalization could still be vulnerable to this type of attack.
+Another desired privacy property could be to prevent an adversary form learning whether an entity is present in the dataset at all, regardless of their sensitive value. This is a fundamental weakness of both the anatomy and data swapping approaches, since the full set of quasi-identifiers are present in the anonymized dataset, giving the adversary a very good chance of succeeding in such a membership test. However, as mentioned, none of the alternative methods fully address membership testing as even datasets produced with generalization do not protect against this type of attack in principle or in practice.
 
 \section{Conclusion}
-
+Privacy preserving anonymization techniques allow data owners to make tradeoffs between the privacy risk of releasing data and the potential utility of the data they release. Practical applications of these techniques should consider how to minimize the disruption that these techniques cause for data analysts in terms of difficulty of use as well as impact on the quality of their results. Data swapping offers less disruption in terms of producing functional analysis than generalization-based methods since the output has an identical schema to the original dataset. Clustering, and in particular customized clustering, shows promise for improving the accuracy of certain kinds of queries over the anonymized dataset. As shown in this work, queries that are highly selective according to one attribute benefit from clustering that focuses on grouping rows with similar values in that attribute. Privacy techniques that are minimally disruptive in both process and quality have a greater chance of seeing adoption and improving privacy for all.
 
 %-------------------------------------------------------------------------------
 \bibliographystyle{plain}
