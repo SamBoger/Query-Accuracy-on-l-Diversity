@@ -220,7 +220,7 @@ public class AdultDatabaseUtils {
 		Map<String, Integer> occupationCounts = new HashMap<String, Integer>();
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
-			PreparedStatement ps = conn.prepareStatement("SELECT occupation, COUNT(*) as total FROM adult WHERE age > ? and age < ?  and education = ? and sex  = ? and race = ? GROUP BY occupation");
+			PreparedStatement ps = conn.prepareStatement("SELECT occupation, COUNT(*) as total FROM adult WHERE age >= ? and age < ?  and education = ? and sex  = ? and race = ? GROUP BY occupation");
 			ps.setInt(1, minAge);
 			ps.setInt(2, maxAge);
 			ps.setString(3, education);
@@ -241,11 +241,71 @@ public class AdultDatabaseUtils {
 		return occupationCounts;
 	}
 	
+	public static Map<String, Integer> runOccupationsQuery(String databaseFilename, int minAge, int maxAge, Collection<String> educations, Collection<String> sexes, Collection<String> races) throws SQLException {
+		Map<String, Integer> occupationCounts = new HashMap<String, Integer>();
+		
+		try {
+			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
+			StringBuilder queryStringBuilder = new StringBuilder("SELECT occupation, COUNT(*) as total FROM adult WHERE age >= ? and age < ?");
+			
+			addToQueryStringBuilder(queryStringBuilder, educations, "education");
+			addToQueryStringBuilder(queryStringBuilder, sexes, "sex");
+			addToQueryStringBuilder(queryStringBuilder, races, "race");
+			
+			queryStringBuilder.append(" GROUP BY occupation");
+			PreparedStatement ps = conn.prepareStatement(queryStringBuilder.toString());
+			ps.setInt(1, minAge);
+			ps.setInt(2, maxAge);
+			int index = 3;
+			for(String education : educations) {
+				ps.setString(index, education);
+				index++;
+			}
+			for(String sex : sexes) {
+				ps.setString(index, sex);
+				index++;
+			}
+			for(String race : races) {
+				ps.setString(index, race);
+				index++;
+			}
+			ps.toString();
+			ps.execute();
+			
+			ResultSet resultSet = ps.getResultSet();
+			while(resultSet.next()) {
+				
+				String occupation = resultSet.getString("occupation");
+				int total = resultSet.getInt("total");
+				occupationCounts.put(occupation, total);
+			}
+		}  catch (SQLException e) {
+            System.out.println(e.getMessage());
+        } finally {
+        	conn.close();
+        }
+		return occupationCounts;
+	}
+	
+	private static void addToQueryStringBuilder(StringBuilder queryStringBuilder, Collection<String> values,
+			String valueName) {
+		if(!values.isEmpty()) {
+			queryStringBuilder.append(" and ").append(valueName).append(" in (");
+			for(int i = 0; i < values.size(); i++) {
+				queryStringBuilder.append("?");
+				if(i < values.size() - 1) {
+					queryStringBuilder.append(", ");
+				}
+			}
+			queryStringBuilder.append(")");
+		}
+	}
+
 	public static int runCountQuery(String databaseFilename, int minAge, int maxAge, String education, String sex, String race, String occupation) {
 		int returnVal = -1;
 		try {
 			conn = DriverManager.getConnection("jdbc:sqlite:" + databaseFilename);
-			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) as total FROM adult WHERE age > ? and age < ?  and education = ? and sex  = ? and race = ? and occupation = ?");
+			PreparedStatement ps = conn.prepareStatement("SELECT COUNT(*) as total FROM adult WHERE age >= ? and age < ?  and education = ? and sex  = ? and race = ? and occupation = ?");
 			ps.setInt(1, minAge);
 			ps.setInt(2, maxAge);
 			ps.setString(3, education);
