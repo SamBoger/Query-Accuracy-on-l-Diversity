@@ -24,7 +24,7 @@ public class MeasureAdultDatabase {
 	private Random rand;
 	
 	private final static String[] databaseNames = {
-			"adult.sql",
+//			"adult.sql",
 			"adult_swapped.sql",
 			"adult_swapped_age3.sql",
 			"adult_swapped_age5.sql",
@@ -85,10 +85,10 @@ public class MeasureAdultDatabase {
 		resetSensitivities();
 		num_experiments = 1;
 		double[][] allResults = new double[num_experiments][databaseNames.length];
-		for(int numAgesIncluded = 0; numAgesIncluded < num_experiments; numAgesIncluded++) {
+		for(int exp = 0; exp < num_experiments; exp++) {
 			//age_selectivity = (numAgesIncluded+1) * AGE_GRANULARITY;
 			System.out.println("BASE comparison selectivity");
-			allResults[numAgesIncluded] = runExperiment();
+			allResults[exp] = runExperiment();
 		}
 		System.out.println("BASE selectivity results:");
 		printExperiments(allResults);

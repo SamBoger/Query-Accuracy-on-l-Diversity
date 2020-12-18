@@ -24,7 +24,7 @@ public class QueryingAnonymizedDataMain {
 		ClusterAdultRows algorithm = new ClusterAdultRows(adultData);
 		System.out.println("Clustering done. Took " + ((System.currentTimeMillis() - curTime)/1000) + " seconds.");
 		
-		curTime = System.currentTimeMillis();	
+		curTime = System.currentTimeMillis();
 //		AdultDatabaseUtils.writeClustersNoSwapping("adult_clusters.sql", algorithm.adultDataRowClusters);
 		AdultDatabaseUtils.writeClustersSwapped(CLUSTER_SWAPPED_DATABASE_NAME, algorithm.adultDataRowClusters);
 		

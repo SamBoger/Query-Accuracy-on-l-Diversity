@@ -155,7 +155,6 @@ public class Configuration {
 	
 	// This must be the same length as QUASI_IDENTIFIER_KEYS and refers to the max generalization values
 	// to attempt, in order of the fields in QUASI_IDENTIFIER_KEYS.
-//	public static final Integer[] QUASI_IDNETIFIER_MAX_GENERALIZATIONS = {6, 6, 6};
 	public static final Integer[] QUASI_IDENTIFIER_MAX_GENERALIZATIONS = {5, 5, 3, 2};
 
 	// This is the data attribute to use as the sensitive value.
@@ -163,7 +162,7 @@ public class Configuration {
 	
 	public static final String INPUT_DATABASE_FILENAME = "adult.sql";
 	
-	public static final String CLUSTER_SWAPPED_DATABASE_NAME = "adult_swapped_education5.sql";//"adult_swapped_race_weight.sql";
+	public static final String CLUSTER_SWAPPED_DATABASE_NAME = "adult_swapped_test.sql";
 	public static final String ORIGINAL_DATABASE = "adult.sql";
 	public static final String BASIC_SWAPPED_DATABASE = "adult_swapped.sql";
 	public static final String[] QI_COLUMNS = {
@@ -172,7 +171,7 @@ public class Configuration {
 	};
 	public static final Double[] QI_DISTANCE_WEIGHTS = {
 			1.0,
-			5.0
+			1.0
 	};
 	
 	public static final Double AGE_WEIGHT = 1.0;
